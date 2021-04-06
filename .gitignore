@@ -1,0 +1,26 @@
+archive
+.archive
+
+# dotenv environment variables file
+.env
+
+# IDE / Editor
+.idea
+
+# macOS
+.DS_Store
+
+.vscode
+
+/fishing-server
+
+/cmd/fishing2firebase/fishing-comp-app-be4564c30c77.json
+/cmd/fishing2firebase/data
+/cmd/fishing2firebase/fishing2firebase
+/cmd/fishing-server/fishing-server
+/cmd/cvsimport/cvsimport
+
+
+# TODO - once tidy up, we can remove this add source to repo
+/cmd/fishing2firebase
+/cmd/csvimport
