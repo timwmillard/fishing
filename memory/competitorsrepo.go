@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"errors"
+	"context"
 	"fishing"
 
 	"github.com/google/uuid"
@@ -9,19 +9,19 @@ import (
 
 // CompetitorsRepo -
 type CompetitorsRepo struct {
-	data map[uuid.UUID]*fishing.Competitor
+	data map[uuid.UUID]fishing.Competitor
 }
 
 // NewCompetitorsRepo -
 func NewCompetitorsRepo() *CompetitorsRepo {
-	data := make(map[uuid.UUID]*fishing.Competitor)
+	data := make(map[uuid.UUID]fishing.Competitor)
 	repo := &CompetitorsRepo{data: data}
 	return repo
 }
 
 // List -
-func (r *CompetitorsRepo) List() ([]*fishing.Competitor, error) {
-	var list []*fishing.Competitor
+func (r *CompetitorsRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
+	var list []fishing.Competitor
 	for _, competitor := range r.data {
 		list = append(list, competitor)
 	}
@@ -29,16 +29,16 @@ func (r *CompetitorsRepo) List() ([]*fishing.Competitor, error) {
 }
 
 // Get -
-func (r *CompetitorsRepo) Get(id uuid.UUID) (*fishing.Competitor, error) {
+func (r *CompetitorsRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
 	competitor, ok := r.data[id]
 	if !ok {
-		return nil, errors.New("competitor not found")
+		return fishing.Competitor{}, fishing.ErrCompetitorNotFound
 	}
 	return competitor, nil
 }
 
 // Create -
-func (r *CompetitorsRepo) Create(c *fishing.Competitor) (*fishing.Competitor, error) {
+func (r *CompetitorsRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	id := uuid.New()
 	c.ID = id
 	r.data[id] = c
@@ -46,18 +46,18 @@ func (r *CompetitorsRepo) Create(c *fishing.Competitor) (*fishing.Competitor, er
 }
 
 // Update -
-func (r *CompetitorsRepo) Update(id uuid.UUID, c *fishing.Competitor) (*fishing.Competitor, error) {
-	_, ok := r.data[id]
+func (r *CompetitorsRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
+	_, ok := r.data[c.ID]
 	if !ok {
-		return nil, errors.New("competitor not found")
+		return fishing.Competitor{}, fishing.ErrCompetitorNotFound
 	}
-	c.ID = id
-	r.data[id] = c
+
+	r.data[c.ID] = c
 	return c, nil
 }
 
 // Delete -
-func (r *CompetitorsRepo) Delete(id uuid.UUID) error {
+func (r *CompetitorsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	delete(r.data, id)
 	return nil
 }

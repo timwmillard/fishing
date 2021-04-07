@@ -7,7 +7,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fishing"
 	"fishing/postgres/db"
 
@@ -33,7 +32,7 @@ func NewCompetitorsRepo(connection *sqlx.DB) *CompetitorsRepo {
 }
 
 // List -
-func (r *CompetitorsRepo) List() ([]*fishing.Competitor, error) {
+func (r *CompetitorsRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
 
 	comp, err := r.query.ListCompetitors(context.TODO())
 	if err != nil {
@@ -46,33 +45,33 @@ func (r *CompetitorsRepo) List() ([]*fishing.Competitor, error) {
 }
 
 // Get -
-func (r *CompetitorsRepo) Get(id uuid.UUID) (*fishing.Competitor, error) {
+func (r *CompetitorsRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
 	var competitor fishing.Competitor
 
 	q := `SELECT uuid, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
 		  FROM competitors WHERE uuid=UUID_TO_BIN(?)`
 	err := r.db.Get(&competitor, q, id)
 	if err != nil {
-		return nil, err
+		return fishing.Competitor{}, err
 	}
 
-	return &competitor, nil
+	return competitor, nil
 }
 
 // Create -
-func (r *CompetitorsRepo) Create(c *fishing.Competitor) (*fishing.Competitor, error) {
+func (r *CompetitorsRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	q := `INSERT INTO competitors
 		  		(uuid, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile)
 		  VALUE (UUID_TO_BIN(UUID()), :event_id, :competitor_no, :firstname, :lastname, :email, :address1, :address2, :suburb, :state, :postcode, :phone, :mobile)`
 	result, err := r.db.NamedExec(q, c)
 	if err != nil {
-		return nil, err
+		return fishing.Competitor{}, err
 	}
 
 	// Update the competitor wit the new ID
 	id, err := result.LastInsertId()
 	if err != nil {
-		return nil, err
+		return fishing.Competitor{}, err
 	}
 
 	var newCompetitor fishing.Competitor
@@ -80,15 +79,14 @@ func (r *CompetitorsRepo) Create(c *fishing.Competitor) (*fishing.Competitor, er
 		  FROM competitors WHERE id=?`
 	err = r.db.Get(&newCompetitor, q, id)
 	if err != nil {
-		return nil, err
+		return fishing.Competitor{}, err
 	}
 
-	return &newCompetitor, nil
+	return newCompetitor, nil
 }
 
 // Update -
-func (r *CompetitorsRepo) Update(id uuid.UUID, c *fishing.Competitor) (*fishing.Competitor, error) {
-	c.ID = id
+func (r *CompetitorsRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 
 	q := `UPDATE competitors
 		  SET event_id=:event_id, competitor_no=:competitor_no, firstname=:firstname, lastname=:lastname, email=:email, address1=:address1, address2=:address2,
@@ -96,22 +94,22 @@ func (r *CompetitorsRepo) Update(id uuid.UUID, c *fishing.Competitor) (*fishing.
 		  WHERE uuid = UUID_TO_BIN(:uuid)`
 	result, err := r.db.NamedExec(q, c)
 	if err != nil {
-		return nil, err
+		return fishing.Competitor{}, err
 	}
 
 	numUpdated, err := result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return fishing.Competitor{}, err
 	}
 	if numUpdated < 1 {
-		return nil, errors.New("competitor not found")
+		return fishing.Competitor{}, fishing.ErrCompetitorNotFound
 	}
 
 	return c, nil
 }
 
 // Delete -
-func (r *CompetitorsRepo) Delete(id uuid.UUID) error {
+func (r *CompetitorsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	q := `DELETE FROM competitors
 		  WHERE uuid = UUID_TO_BIN(?)`
 	result, err := r.db.Exec(q, id)
@@ -124,17 +122,17 @@ func (r *CompetitorsRepo) Delete(id uuid.UUID) error {
 		return err
 	}
 	if numDeleted < 1 {
-		return errors.New("competitor not found")
+		return fishing.ErrCompetitorNotFound
 	}
 
 	return nil
 }
 
-func fishingCompetitors(dbComps []db.Competitor) []*fishing.Competitor {
-	fishComps := make([]*fishing.Competitor, len(dbComps))
+func fishingCompetitors(dbComps []db.Competitor) []fishing.Competitor {
+	fishComps := make([]fishing.Competitor, len(dbComps))
 	for _, c := range dbComps {
 		p := fishingCompetitor(c)
-		fishComps = append(fishComps, &p)
+		fishComps = append(fishComps, p)
 	}
 	return fishComps
 }
@@ -142,7 +140,7 @@ func fishingCompetitors(dbComps []db.Competitor) []*fishing.Competitor {
 func fishingCompetitor(c db.Competitor) fishing.Competitor {
 	return fishing.Competitor{
 		ID:           c.ID,
-		CompetitorNo: nullInt(c.CompetitorNo),
+		CompetitorNo: nullString(c.CompetitorNo),
 		Firstname:    c.Firstname,
 		Lastname:     c.Lastname,
 		Email:        c.Email,
@@ -153,10 +151,12 @@ func fishingCompetitor(c db.Competitor) fishing.Competitor {
 		Postcode:     c.Postcode,
 		Phone:        c.Phone,
 		Mobile:       c.Mobile,
-		EventID:      nullInt(c.EventID),
+		EventID:      c.EventID,
 	}
 }
 
+//lint:ignore U1000 unused utility function
+// TODO write test
 func nullInt(i sql.NullInt32) *int {
 	_, err := i.Value()
 	if err != nil {
@@ -168,11 +168,10 @@ func nullInt(i sql.NullInt32) *int {
 
 //lint:ignore U1000 unused utility function
 // TODO write test
-func nullString(s sql.NullString) *string {
+func nullString(s sql.NullString) string {
 	_, err := s.Value()
 	if err != nil {
-		return nil
+		return ""
 	}
-	r := string(s.String)
-	return &r
+	return s.String
 }

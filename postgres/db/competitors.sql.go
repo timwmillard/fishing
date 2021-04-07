@@ -5,17 +5,74 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
 
-const getCompetitors = `-- name: GetCompetitors :one
+const createCompetitor = `-- name: CreateCompetitor :one
+INSERT INTO competitors (
+    id,
+    firstname,
+    lastname
+) VALUES (
+    $1,
+    $2,
+    $3
+)
+RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid, registered, checkin, ticket, team_id, user_id
+`
+
+type CreateCompetitorParams struct {
+	ID        uuid.UUID
+	Firstname string
+	Lastname  string
+}
+
+func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorParams) (Competitor, error) {
+	row := q.db.QueryRowContext(ctx, createCompetitor, arg.ID, arg.Firstname, arg.Lastname)
+	var i Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.EventID,
+		&i.CompetitorNo,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Phone,
+		&i.Mobile,
+		&i.Paid,
+		&i.Registered,
+		&i.Checkin,
+		&i.Ticket,
+		&i.TeamID,
+		&i.UserID,
+	)
+	return i, err
+}
+
+const deleteCompetitor = `-- name: DeleteCompetitor :exec
+DELETE FROM competitors
+WHERE id = $1
+`
+
+func (q *Queries) DeleteCompetitor(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteCompetitor, id)
+	return err
+}
+
+const getCompetitor = `-- name: GetCompetitor :one
 SELECT id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid, registered, checkin, ticket, team_id, user_id FROM competitors
 WHERE id = $1
 `
 
-func (q *Queries) GetCompetitors(ctx context.Context, id uuid.UUID) (Competitor, error) {
-	row := q.db.QueryRowContext(ctx, getCompetitors, id)
+func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (Competitor, error) {
+	row := q.db.QueryRowContext(ctx, getCompetitor, id)
 	var i Competitor
 	err := row.Scan(
 		&i.ID,
@@ -87,4 +144,52 @@ func (q *Queries) ListCompetitors(ctx context.Context) ([]Competitor, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateCompetitor = `-- name: UpdateCompetitor :one
+UPDATE competitors
+SET competitor_no = $2,
+    firstname = $3,
+    lastname = $4
+WHERE id = $1
+RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid, registered, checkin, ticket, team_id, user_id
+`
+
+type UpdateCompetitorParams struct {
+	ID           uuid.UUID
+	CompetitorNo sql.NullString
+	Firstname    string
+	Lastname     string
+}
+
+func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorParams) (Competitor, error) {
+	row := q.db.QueryRowContext(ctx, updateCompetitor,
+		arg.ID,
+		arg.CompetitorNo,
+		arg.Firstname,
+		arg.Lastname,
+	)
+	var i Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.EventID,
+		&i.CompetitorNo,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Phone,
+		&i.Mobile,
+		&i.Paid,
+		&i.Registered,
+		&i.Checkin,
+		&i.Ticket,
+		&i.TeamID,
+		&i.UserID,
+	)
+	return i, err
 }

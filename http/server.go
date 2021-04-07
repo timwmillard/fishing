@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"fishing"
 	"fishing/memory"
 	"fishing/postgres"
@@ -62,14 +63,15 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 //lint:ignore U1000 unused
 func createDummyData(repo *memory.CompetitorsRepo) {
-	competitor := &fishing.Competitor{
+	ctx := context.Background()
+	competitor := fishing.Competitor{
 		Firstname: "Tim",
 		Lastname:  "Millard",
 	}
-	repo.Create(competitor)
-	competitor = &fishing.Competitor{
+	repo.Create(ctx, competitor)
+	competitor = fishing.Competitor{
 		Firstname: "John",
 		Lastname:  "Smith",
 	}
-	repo.Create(competitor)
+	repo.Create(ctx, competitor)
 }

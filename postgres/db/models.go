@@ -51,8 +51,8 @@ type Competition struct {
 
 type Competitor struct {
 	ID           uuid.UUID
-	EventID      sql.NullInt32
-	CompetitorNo sql.NullInt32
+	EventID      uuid.UUID
+	CompetitorNo sql.NullString
 	Firstname    string
 	Lastname     string
 	Email        string

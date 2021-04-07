@@ -50,7 +50,7 @@ func (c *CompetitorsHandler) List(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	competitors, err := c.repo.List()
+	competitors, err := c.repo.List(r.Context())
 	if err != nil {
 		c.log.Printf("List Competitors: %v", err)
 		w.WriteHeader(http.StatusNotFound)
@@ -71,7 +71,7 @@ func (c *CompetitorsHandler) Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	competitor, err := c.repo.Get(id)
+	competitor, err := c.repo.Get(r.Context(), id)
 	if err != nil {
 		c.log.Printf("Get Competitor: %v", err)
 		w.WriteHeader(http.StatusNotFound)
@@ -94,7 +94,7 @@ func (c *CompetitorsHandler) Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	newCompetitor, err := c.repo.Create(&requestCompetitor)
+	newCompetitor, err := c.repo.Create(r.Context(), requestCompetitor)
 	if err != nil {
 		c.log.Printf("Create Competitor: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -109,14 +109,18 @@ func (c *CompetitorsHandler) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	id, err := uuid.Parse(mux.Vars(r)["id"])
+	var (
+		requestCompetitor fishing.Competitor
+		err               error
+	)
+
+	requestCompetitor.ID, err = uuid.Parse(mux.Vars(r)["id"])
 	if err != nil {
 		c.log.Printf("Update Competitor: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	var requestCompetitor fishing.Competitor
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&requestCompetitor)
 	if err != nil {
@@ -125,7 +129,7 @@ func (c *CompetitorsHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedCompetitor, err := c.repo.Update(id, &requestCompetitor)
+	updatedCompetitor, err := c.repo.Update(r.Context(), requestCompetitor)
 	if err != nil {
 		c.log.Printf("Update Competitor: %v", err)
 		w.WriteHeader(http.StatusNotFound)
@@ -147,7 +151,7 @@ func (c *CompetitorsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.repo.Delete(id)
+	err = c.repo.Delete(r.Context(), id)
 	if err != nil {
 		c.log.Printf("Delete Competitor: %v", err)
 		w.WriteHeader(http.StatusNotFound)

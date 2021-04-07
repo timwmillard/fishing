@@ -32,8 +32,8 @@ CREATE TABLE team (
 
 CREATE TABLE competitors (
   id uuid NOT NULL PRIMARY KEY,
-  event_id int,
-  competitor_no int,
+  event_id uuid,
+  competitor_no varchar(255) DEFAULT '',
   firstname varchar(255) NOT NULL DEFAULT '',
   lastname varchar(255) NOT NULL DEFAULT '',
   email varchar(255) NOT NULL DEFAULT '',
