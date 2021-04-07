@@ -41,7 +41,7 @@ func (r *CompetitorsRepo) List() ([]*fishing.Competitor, error) {
 		return nil, err
 	}
 
-	fishComp := CompetitorsFromDB(comp)
+	fishComp := fishingCompetitors(comp)
 
 	return fishComp, nil
 }
@@ -131,16 +131,16 @@ func (r *CompetitorsRepo) Delete(id uuid.UUID) error {
 	return nil
 }
 
-func CompetitorsFromDB(dbComps []db.Competitor) []*fishing.Competitor {
+func fishingCompetitors(dbComps []db.Competitor) []*fishing.Competitor {
 	fishComps := make([]*fishing.Competitor, len(dbComps))
 	for _, c := range dbComps {
-		p := CompetitorFromDB(c)
+		p := fishingCompetitor(c)
 		fishComps = append(fishComps, &p)
 	}
 	return fishComps
 }
 
-func CompetitorFromDB(c db.Competitor) fishing.Competitor {
+func fishingCompetitor(c db.Competitor) fishing.Competitor {
 	return fishing.Competitor{
 		ID:           c.ID,
 		CompetitorNo: nullInt(c.CompetitorNo),
