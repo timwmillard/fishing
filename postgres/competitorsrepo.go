@@ -1,7 +1,6 @@
 // Postgres implementation of CompetitorsRepo
 //
-//go:generate sqlc generate -f postgres/db/sqlc.yaml
-// TODO - Fix Go Generate above to work
+//go:generate sqlc generate
 
 package postgres
 
