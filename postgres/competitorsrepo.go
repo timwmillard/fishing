@@ -6,7 +6,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fishing"
 	"fishing/postgres/db"
 
@@ -33,29 +32,21 @@ func NewCompetitorsRepo(connection *sqlx.DB) *CompetitorsRepo {
 
 // List -
 func (r *CompetitorsRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
-
-	comp, err := r.query.ListCompetitors(context.TODO())
+	comps, err := r.query.ListCompetitors(context.TODO())
 	if err != nil {
 		return nil, err
 	}
+	return fishingCompetitors(comps), nil
 
-	fishComp := fishingCompetitors(comp)
-
-	return fishComp, nil
 }
 
 // Get -
 func (r *CompetitorsRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
-	var competitor fishing.Competitor
-
-	q := `SELECT uuid, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
-		  FROM competitors WHERE uuid=UUID_TO_BIN(?)`
-	err := r.db.Get(&competitor, q, id)
+	comp, err := r.query.GetCompetitor(ctx, id)
 	if err != nil {
 		return fishing.Competitor{}, err
 	}
-
-	return competitor, nil
+	return fishingCompetitor(comp), nil
 }
 
 // Create -
@@ -153,25 +144,4 @@ func fishingCompetitor(c db.Competitor) fishing.Competitor {
 		Mobile:       c.Mobile,
 		EventID:      c.EventID,
 	}
-}
-
-//lint:ignore U1000 unused utility function
-// TODO write test
-func nullInt(i sql.NullInt32) *int {
-	_, err := i.Value()
-	if err != nil {
-		return nil
-	}
-	r := int(i.Int32)
-	return &r
-}
-
-//lint:ignore U1000 unused utility function
-// TODO write test
-func nullString(s sql.NullString) string {
-	_, err := s.Value()
-	if err != nil {
-		return ""
-	}
-	return s.String
 }
