@@ -20,7 +20,7 @@ INSERT INTO competitors (
     $2,
     $3
 )
-RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid, registered, checkin, ticket, team_id, user_id
+RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid
 `
 
 type CreateCompetitorParams struct {
@@ -47,27 +47,25 @@ func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorPara
 		&i.Phone,
 		&i.Mobile,
 		&i.Paid,
-		&i.Registered,
-		&i.Checkin,
-		&i.Ticket,
-		&i.TeamID,
-		&i.UserID,
 	)
 	return i, err
 }
 
-const deleteCompetitor = `-- name: DeleteCompetitor :exec
+const deleteCompetitor = `-- name: DeleteCompetitor :execrows
 DELETE FROM competitors
 WHERE id = $1
 `
 
-func (q *Queries) DeleteCompetitor(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteCompetitor, id)
-	return err
+func (q *Queries) DeleteCompetitor(ctx context.Context, id uuid.UUID) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteCompetitor, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getCompetitor = `-- name: GetCompetitor :one
-SELECT id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid, registered, checkin, ticket, team_id, user_id FROM competitors
+SELECT id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid FROM competitors
 WHERE id = $1
 `
 
@@ -89,17 +87,12 @@ func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (Competitor, 
 		&i.Phone,
 		&i.Mobile,
 		&i.Paid,
-		&i.Registered,
-		&i.Checkin,
-		&i.Ticket,
-		&i.TeamID,
-		&i.UserID,
 	)
 	return i, err
 }
 
 const listCompetitors = `-- name: ListCompetitors :many
-SELECT id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid, registered, checkin, ticket, team_id, user_id FROM competitors
+SELECT id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid FROM competitors
 ORDER BY competitor_no, lastname, firstname ASC
 `
 
@@ -127,11 +120,6 @@ func (q *Queries) ListCompetitors(ctx context.Context) ([]Competitor, error) {
 			&i.Phone,
 			&i.Mobile,
 			&i.Paid,
-			&i.Registered,
-			&i.Checkin,
-			&i.Ticket,
-			&i.TeamID,
-			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -152,7 +140,7 @@ SET competitor_no = $2,
     firstname = $3,
     lastname = $4
 WHERE id = $1
-RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid, registered, checkin, ticket, team_id, user_id
+RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid
 `
 
 type UpdateCompetitorParams struct {
@@ -185,11 +173,6 @@ func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorPara
 		&i.Phone,
 		&i.Mobile,
 		&i.Paid,
-		&i.Registered,
-		&i.Checkin,
-		&i.Ticket,
-		&i.TeamID,
-		&i.UserID,
 	)
 	return i, err
 }

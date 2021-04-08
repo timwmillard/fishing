@@ -27,6 +27,6 @@ SET competitor_no = $2,
 WHERE id = $1
 RETURNING *;
 
--- name: DeleteCompetitor :exec
+-- name: DeleteCompetitor :execrows
 DELETE FROM competitors
-WHERE id = $1; 
+WHERE id = $1;

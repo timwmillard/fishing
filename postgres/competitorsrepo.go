@@ -51,64 +51,26 @@ func (r *CompetitorsRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Compet
 
 // Create -
 func (r *CompetitorsRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
-	q := `INSERT INTO competitors
-		  		(uuid, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile)
-		  VALUE (UUID_TO_BIN(UUID()), :event_id, :competitor_no, :firstname, :lastname, :email, :address1, :address2, :suburb, :state, :postcode, :phone, :mobile)`
-	result, err := r.db.NamedExec(q, c)
+	comp, err := r.query.CreateCompetitor(ctx, createCompetitorParams(c))
 	if err != nil {
-		return fishing.Competitor{}, err
+		return fishing.Competitor{}, nil
 	}
-
-	// Update the competitor wit the new ID
-	id, err := result.LastInsertId()
-	if err != nil {
-		return fishing.Competitor{}, err
-	}
-
-	var newCompetitor fishing.Competitor
-	q = `SELECT uuid, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
-		  FROM competitors WHERE id=?`
-	err = r.db.Get(&newCompetitor, q, id)
-	if err != nil {
-		return fishing.Competitor{}, err
-	}
-
-	return newCompetitor, nil
+	return fishingCompetitor(comp), nil
 }
 
 // Update -
 func (r *CompetitorsRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
-
-	q := `UPDATE competitors
-		  SET event_id=:event_id, competitor_no=:competitor_no, firstname=:firstname, lastname=:lastname, email=:email, address1=:address1, address2=:address2,
-		  	 suburb=:suburb, state=:state, postcode=:postcode, phone=:phone, mobile=:mobile
-		  WHERE uuid = UUID_TO_BIN(:uuid)`
-	result, err := r.db.NamedExec(q, c)
+	comp, err := r.query.UpdateCompetitor(ctx, updateCompetitorParams(c))
 	if err != nil {
-		return fishing.Competitor{}, err
+		return fishing.Competitor{}, nil
 	}
-
-	numUpdated, err := result.RowsAffected()
-	if err != nil {
-		return fishing.Competitor{}, err
-	}
-	if numUpdated < 1 {
-		return fishing.Competitor{}, fishing.ErrCompetitorNotFound
-	}
-
-	return c, nil
+	return fishingCompetitor(comp), nil
 }
 
 // Delete -
 func (r *CompetitorsRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	q := `DELETE FROM competitors
-		  WHERE uuid = UUID_TO_BIN(?)`
-	result, err := r.db.Exec(q, id)
-	if err != nil {
-		return err
-	}
 
-	numDeleted, err := result.RowsAffected()
+	numDeleted, err := r.query.DeleteCompetitor(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -117,6 +79,22 @@ func (r *CompetitorsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func createCompetitorParams(c fishing.Competitor) db.CreateCompetitorParams {
+	return db.CreateCompetitorParams{
+		ID:        c.ID,
+		Firstname: c.Firstname,
+		Lastname:  c.Lastname,
+	}
+}
+
+func updateCompetitorParams(c fishing.Competitor) db.UpdateCompetitorParams {
+	return db.UpdateCompetitorParams{
+		ID:        c.ID,
+		Firstname: c.Firstname,
+		Lastname:  c.Lastname,
+	}
 }
 
 func fishingCompetitors(dbComps []db.Competitor) []fishing.Competitor {
