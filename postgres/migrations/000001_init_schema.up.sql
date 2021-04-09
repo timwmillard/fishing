@@ -32,7 +32,7 @@
 
 CREATE TABLE competitors (
   id uuid NOT NULL PRIMARY KEY,
-  event_id uuid,
+  -- event_id uuid,
   competitor_no varchar(255) DEFAULT '',
   firstname varchar(255) NOT NULL DEFAULT '',
   lastname varchar(255) NOT NULL DEFAULT '',
@@ -43,8 +43,8 @@ CREATE TABLE competitors (
   state varchar(255) NOT NULL DEFAULT '',
   postcode varchar(20) NOT NULL DEFAULT '',
   phone varchar(20) NOT NULL DEFAULT '',
-  mobile varchar(20) NOT NULL DEFAULT '',
-  paid smallint DEFAULT 0
+  mobile varchar(20) NOT NULL DEFAULT ''
+  -- paid smallint DEFAULT 0,
   -- registered smallint DEFAULT 0,
   -- checkin smallint DEFAULT 0,
   -- ticket int DEFAULT 0,

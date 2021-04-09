@@ -10,7 +10,6 @@ import (
 
 type Competitor struct {
 	ID           uuid.UUID
-	EventID      uuid.UUID
 	CompetitorNo sql.NullString
 	Firstname    string
 	Lastname     string
@@ -22,5 +21,4 @@ type Competitor struct {
 	Postcode     string
 	Phone        string
 	Mobile       string
-	Paid         int16
 }

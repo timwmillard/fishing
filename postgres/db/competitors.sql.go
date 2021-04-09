@@ -20,7 +20,7 @@ INSERT INTO competitors (
     $2,
     $3
 )
-RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid
+RETURNING id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
 `
 
 type CreateCompetitorParams struct {
@@ -34,7 +34,6 @@ func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorPara
 	var i Competitor
 	err := row.Scan(
 		&i.ID,
-		&i.EventID,
 		&i.CompetitorNo,
 		&i.Firstname,
 		&i.Lastname,
@@ -46,7 +45,6 @@ func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorPara
 		&i.Postcode,
 		&i.Phone,
 		&i.Mobile,
-		&i.Paid,
 	)
 	return i, err
 }
@@ -65,7 +63,7 @@ func (q *Queries) DeleteCompetitor(ctx context.Context, id uuid.UUID) (int64, er
 }
 
 const getCompetitor = `-- name: GetCompetitor :one
-SELECT id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid FROM competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM competitors
 WHERE id = $1
 `
 
@@ -74,7 +72,6 @@ func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (Competitor, 
 	var i Competitor
 	err := row.Scan(
 		&i.ID,
-		&i.EventID,
 		&i.CompetitorNo,
 		&i.Firstname,
 		&i.Lastname,
@@ -86,13 +83,12 @@ func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (Competitor, 
 		&i.Postcode,
 		&i.Phone,
 		&i.Mobile,
-		&i.Paid,
 	)
 	return i, err
 }
 
 const listCompetitors = `-- name: ListCompetitors :many
-SELECT id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid FROM competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM competitors
 ORDER BY competitor_no, lastname, firstname ASC
 `
 
@@ -107,7 +103,6 @@ func (q *Queries) ListCompetitors(ctx context.Context) ([]Competitor, error) {
 		var i Competitor
 		if err := rows.Scan(
 			&i.ID,
-			&i.EventID,
 			&i.CompetitorNo,
 			&i.Firstname,
 			&i.Lastname,
@@ -119,7 +114,6 @@ func (q *Queries) ListCompetitors(ctx context.Context) ([]Competitor, error) {
 			&i.Postcode,
 			&i.Phone,
 			&i.Mobile,
-			&i.Paid,
 		); err != nil {
 			return nil, err
 		}
@@ -140,7 +134,7 @@ SET competitor_no = $2,
     firstname = $3,
     lastname = $4
 WHERE id = $1
-RETURNING id, event_id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile, paid
+RETURNING id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
 `
 
 type UpdateCompetitorParams struct {
@@ -160,7 +154,6 @@ func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorPara
 	var i Competitor
 	err := row.Scan(
 		&i.ID,
-		&i.EventID,
 		&i.CompetitorNo,
 		&i.Firstname,
 		&i.Lastname,
@@ -172,7 +165,6 @@ func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorPara
 		&i.Postcode,
 		&i.Phone,
 		&i.Mobile,
-		&i.Paid,
 	)
 	return i, err
 }

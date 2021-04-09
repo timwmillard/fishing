@@ -6,28 +6,30 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fishing"
 	"fishing/postgres/db"
 
 	"github.com/google/uuid"
-
-	_ "github.com/go-sql-driver/mysql" // Need MySQL driver
-	"github.com/jmoiron/sqlx"
+	// _ "github.com/go-sql-driver/mysql" // Need MySQL driver
 )
 
 // CompetitorsRepo -
 type CompetitorsRepo struct {
-	db    *sqlx.DB
-	query *db.Queries
+	database *sql.DB
+	query    *db.Queries
 }
 
 // NewCompetitorsRepo -
-func NewCompetitorsRepo(connection *sqlx.DB) *CompetitorsRepo {
-
+func NewCompetitorsRepo(connection *sql.DB) *CompetitorsRepo {
 	return &CompetitorsRepo{
-		db:    connection,
-		query: db.New(connection),
+		database: connection,
+		query:    db.New(connection),
 	}
+}
+
+func (r *CompetitorsRepo) Close() {
+	r.database.Close()
 }
 
 // List -
@@ -36,7 +38,7 @@ func (r *CompetitorsRepo) List(ctx context.Context) ([]fishing.Competitor, error
 	if err != nil {
 		return nil, err
 	}
-	return fishingCompetitors(comps), nil
+	return competitors(comps), nil
 
 }
 
@@ -46,7 +48,7 @@ func (r *CompetitorsRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Compet
 	if err != nil {
 		return fishing.Competitor{}, err
 	}
-	return fishingCompetitor(comp), nil
+	return competitor(comp), nil
 }
 
 // Create -
@@ -55,7 +57,7 @@ func (r *CompetitorsRepo) Create(ctx context.Context, c fishing.Competitor) (fis
 	if err != nil {
 		return fishing.Competitor{}, nil
 	}
-	return fishingCompetitor(comp), nil
+	return competitor(comp), nil
 }
 
 // Update -
@@ -64,7 +66,7 @@ func (r *CompetitorsRepo) Update(ctx context.Context, c fishing.Competitor) (fis
 	if err != nil {
 		return fishing.Competitor{}, nil
 	}
-	return fishingCompetitor(comp), nil
+	return competitor(comp), nil
 }
 
 // Delete -
@@ -97,16 +99,16 @@ func updateCompetitorParams(c fishing.Competitor) db.UpdateCompetitorParams {
 	}
 }
 
-func fishingCompetitors(dbComps []db.Competitor) []fishing.Competitor {
+func competitors(dbComps []db.Competitor) []fishing.Competitor {
 	fishComps := make([]fishing.Competitor, len(dbComps))
 	for _, c := range dbComps {
-		p := fishingCompetitor(c)
+		p := competitor(c)
 		fishComps = append(fishComps, p)
 	}
 	return fishComps
 }
 
-func fishingCompetitor(c db.Competitor) fishing.Competitor {
+func competitor(c db.Competitor) fishing.Competitor {
 	return fishing.Competitor{
 		ID:           c.ID,
 		CompetitorNo: nullString(c.CompetitorNo),
@@ -120,6 +122,6 @@ func fishingCompetitor(c db.Competitor) fishing.Competitor {
 		Postcode:     c.Postcode,
 		Phone:        c.Phone,
 		Mobile:       c.Mobile,
-		EventID:      c.EventID,
+		// EventID:      c.EventID,
 	}
 }

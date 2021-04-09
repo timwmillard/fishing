@@ -9,7 +9,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jmoiron/sqlx"
+
+	"database/sql"
 
 	"gorm.io/gorm"
 )
@@ -25,7 +26,7 @@ func (s *Server) ListenAndServe() error {
 	var err error
 
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", "?", "?", "localhost", "5432", "fishingcomp")
-	db, err := sqlx.Connect("mysql", connectionString)
+	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return fmt.Errorf("database connection error: %v", err)
 	}
