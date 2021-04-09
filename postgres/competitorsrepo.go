@@ -16,20 +16,14 @@ import (
 
 // CompetitorsRepo -
 type CompetitorsRepo struct {
-	database *sql.DB
-	query    *db.Queries
+	query *db.Queries
 }
 
 // NewCompetitorsRepo -
 func NewCompetitorsRepo(connection *sql.DB) *CompetitorsRepo {
 	return &CompetitorsRepo{
-		database: connection,
-		query:    db.New(connection),
+		query: db.New(connection),
 	}
-}
-
-func (r *CompetitorsRepo) Close() {
-	r.database.Close()
 }
 
 // List -
@@ -85,17 +79,35 @@ func (r *CompetitorsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 
 func createCompetitorParams(c fishing.Competitor) db.CreateCompetitorParams {
 	return db.CreateCompetitorParams{
-		ID:        c.ID,
-		Firstname: c.Firstname,
-		Lastname:  c.Lastname,
+		ID:           c.ID,
+		CompetitorNo: sql.NullString{String: c.CompetitorNo, Valid: true},
+		Firstname:    c.Firstname,
+		Lastname:     c.Lastname,
+		Email:        c.Email,
+		Address1:     c.Address1,
+		Address2:     c.Address2,
+		Suburb:       c.Suburb,
+		State:        c.State,
+		Postcode:     c.Postcode,
+		Phone:        c.Phone,
+		Mobile:       c.Mobile,
 	}
 }
 
 func updateCompetitorParams(c fishing.Competitor) db.UpdateCompetitorParams {
 	return db.UpdateCompetitorParams{
-		ID:        c.ID,
-		Firstname: c.Firstname,
-		Lastname:  c.Lastname,
+		ID:           c.ID,
+		CompetitorNo: sql.NullString{String: c.CompetitorNo, Valid: true},
+		Firstname:    c.Firstname,
+		Lastname:     c.Lastname,
+		Email:        c.Email,
+		Address1:     c.Address1,
+		Address2:     c.Address2,
+		Suburb:       c.Suburb,
+		State:        c.State,
+		Postcode:     c.Postcode,
+		Phone:        c.Phone,
+		Mobile:       c.Mobile,
 	}
 }
 

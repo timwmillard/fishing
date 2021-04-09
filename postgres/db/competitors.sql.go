@@ -12,25 +12,43 @@ import (
 
 const createCompetitor = `-- name: CreateCompetitor :one
 INSERT INTO competitors (
-    id,
-    firstname,
-    lastname
+    id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
 ) VALUES (
-    $1,
-    $2,
-    $3
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
 )
 RETURNING id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
 `
 
 type CreateCompetitorParams struct {
-	ID        uuid.UUID
-	Firstname string
-	Lastname  string
+	ID           uuid.UUID
+	CompetitorNo sql.NullString
+	Firstname    string
+	Lastname     string
+	Email        string
+	Address1     string
+	Address2     string
+	Suburb       string
+	State        string
+	Postcode     string
+	Phone        string
+	Mobile       string
 }
 
 func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorParams) (Competitor, error) {
-	row := q.db.QueryRowContext(ctx, createCompetitor, arg.ID, arg.Firstname, arg.Lastname)
+	row := q.db.QueryRowContext(ctx, createCompetitor,
+		arg.ID,
+		arg.CompetitorNo,
+		arg.Firstname,
+		arg.Lastname,
+		arg.Email,
+		arg.Address1,
+		arg.Address2,
+		arg.Suburb,
+		arg.State,
+		arg.Postcode,
+		arg.Phone,
+		arg.Mobile,
+	)
 	var i Competitor
 	err := row.Scan(
 		&i.ID,
@@ -132,7 +150,15 @@ const updateCompetitor = `-- name: UpdateCompetitor :one
 UPDATE competitors
 SET competitor_no = $2,
     firstname = $3,
-    lastname = $4
+    lastname = $4,
+    email = $5, 
+    address1 = $6,
+    address2 = $7,
+    suburb = $8,
+    state = $9,
+    postcode = $10,
+    phone = $11,
+    mobile = $12
 WHERE id = $1
 RETURNING id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
 `
@@ -142,6 +168,14 @@ type UpdateCompetitorParams struct {
 	CompetitorNo sql.NullString
 	Firstname    string
 	Lastname     string
+	Email        string
+	Address1     string
+	Address2     string
+	Suburb       string
+	State        string
+	Postcode     string
+	Phone        string
+	Mobile       string
 }
 
 func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorParams) (Competitor, error) {
@@ -150,6 +184,14 @@ func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorPara
 		arg.CompetitorNo,
 		arg.Firstname,
 		arg.Lastname,
+		arg.Email,
+		arg.Address1,
+		arg.Address2,
+		arg.Suburb,
+		arg.State,
+		arg.Postcode,
+		arg.Phone,
+		arg.Mobile,
 	)
 	var i Competitor
 	err := row.Scan(
