@@ -1,7 +1,4 @@
 // Postgres implementation of CompetitorsRepo
-//
-//go:generate sqlc generate
-
 package postgres
 
 import (

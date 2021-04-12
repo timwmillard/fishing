@@ -1,5 +1,7 @@
 package postgres
 
+//go:generate sqlc generate
+
 import "database/sql"
 
 func nullIntP(i sql.NullInt32) *int {
