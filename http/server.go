@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"database/sql"
 	"fishing"
 	"fishing/memory"
 	"fishing/postgres"
@@ -9,15 +10,12 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-
-	"database/sql"
-
-	"gorm.io/gorm"
+	_ "github.com/lib/pq"
 )
 
 // Server -
 type Server struct {
-	DB     *gorm.DB
+	DB     *sql.DB
 	Router *mux.Router
 }
 
@@ -30,6 +28,13 @@ func (s *Server) ListenAndServe() error {
 	if err != nil {
 		return fmt.Errorf("database connection error: %v", err)
 	}
+
+	// conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// defer conn.Close(context.Background())
 
 	// var competitorsRepo fishing.CompetitorsRepo
 
@@ -50,8 +55,8 @@ func (s *Server) ListenAndServe() error {
 	s.Router.HandleFunc("/competitors/{id}", competitorsHandler.Update).Methods("PUT")    // Update a contact
 	s.Router.HandleFunc("/competitors/{id}", competitorsHandler.Delete).Methods("DELETE") // Update a contact
 
-	fmt.Printf("Listing on port 8080\n")
-	err = http.ListenAndServe(":8080", s.Router)
+	fmt.Printf("Listing on port 6000\n")
+	err = http.ListenAndServe(":6000", s.Router)
 	if err != nil {
 		return err
 	}
