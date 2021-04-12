@@ -28,9 +28,13 @@ func NewCompetitorsHandler(repo fishing.CompetitorsRepo) *CompetitorsHandler {
 		repo:   repo,
 		router: mux.NewRouter(),
 		log:    log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile),
-		// errLog:  log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile),
-		// infoLog: log.New(os.Stderr, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile),
 	}
+
+	// middleware
+	h.router.Use(jsonMiddleware)
+	h.router.Use(corsMiddleware)
+
+	// routes
 	h.router.HandleFunc("/competitors", h.List).Methods("GET")           // Get all contacts
 	h.router.HandleFunc("/competitors/{id}", h.Get).Methods("GET")       // Get contact
 	h.router.HandleFunc("/competitors", h.Create).Methods("POST")        // Create a contact
@@ -47,9 +51,6 @@ func (c *CompetitorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // List -
 func (c *CompetitorsHandler) List(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	competitors, err := c.repo.List(r.Context())
 	if err != nil {
 		c.log.Printf("List Competitors: %v", err)
@@ -62,9 +63,6 @@ func (c *CompetitorsHandler) List(w http.ResponseWriter, r *http.Request) {
 
 // Get -
 func (c *CompetitorsHandler) Get(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	id, err := uuid.Parse(mux.Vars(r)["id"])
 	if err != nil {
 		c.log.Printf("Get Competitor: %v", err)
@@ -83,9 +81,6 @@ func (c *CompetitorsHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 // Create -
 func (c *CompetitorsHandler) Create(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	var requestCompetitor fishing.Competitor
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestCompetitor)
@@ -106,9 +101,6 @@ func (c *CompetitorsHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // Update -
 func (c *CompetitorsHandler) Update(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	var (
 		requestCompetitor fishing.Competitor
 		err               error
@@ -141,9 +133,6 @@ func (c *CompetitorsHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 // Delete -
 func (c *CompetitorsHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	id, err := uuid.Parse(mux.Vars(r)["id"])
 	if err != nil {
 		c.log.Printf("Update Competitor: %v", err)

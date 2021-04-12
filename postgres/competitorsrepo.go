@@ -8,7 +8,6 @@ import (
 	"fishing/postgres/db"
 
 	"github.com/google/uuid"
-	// _ "github.com/go-sql-driver/mysql" // Need MySQL driver
 )
 
 // CompetitorsRepo -
