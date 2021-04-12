@@ -12,12 +12,12 @@ archive
 
 .vscode
 
-/fishing-server
+/fishingd
 
 /cmd/fishing2firebase/fishing-comp-app-be4564c30c77.json
 /cmd/fishing2firebase/data
 /cmd/fishing2firebase/fishing2firebase
-/cmd/fishing-server/fishing-server
+/cmd/fishingd/fishingd
 /cmd/cvsimport/cvsimport
 
 
