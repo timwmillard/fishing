@@ -2,14 +2,15 @@ package http
 
 import (
 	"context"
-	"fishing"
-	"fishing/mock"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/timwmillard/fishing"
+	"github.com/timwmillard/fishing/mock"
 )
 
 var (

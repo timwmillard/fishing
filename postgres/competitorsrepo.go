@@ -4,10 +4,10 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fishing"
-	"fishing/postgres/db"
 
 	"github.com/google/uuid"
+	"github.com/timwmillard/fishing"
+	"github.com/timwmillard/fishing/postgres/db"
 )
 
 // CompetitorsRepo -

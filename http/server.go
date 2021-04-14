@@ -3,14 +3,14 @@ package http
 import (
 	"context"
 	"database/sql"
-	"fishing"
-	"fishing/memory"
-	"fishing/postgres"
 	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"github.com/timwmillard/fishing"
+	"github.com/timwmillard/fishing/memory"
+	"github.com/timwmillard/fishing/postgres"
 )
 
 // Server -

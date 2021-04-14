@@ -1,8 +1,9 @@
 package main
 
 import (
-	"fishing/http"
 	"log"
+
+	"github.com/timwmillard/fishing/http"
 )
 
 var server http.Server

@@ -2,11 +2,11 @@ package memory
 
 import (
 	"context"
-	"fishing"
 	"reflect"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/timwmillard/fishing"
 )
 
 var (

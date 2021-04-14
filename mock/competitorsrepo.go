@@ -4,7 +4,7 @@ package mock
 
 import (
 	context "context"
-	fishing "fishing"
+	fishing "github.com/timwmillard/fishing"
 
 	mock "github.com/stretchr/testify/mock"
 

@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"fishing"
-
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/timwmillard/fishing"
 )
 
 // CompetitorsHandler -

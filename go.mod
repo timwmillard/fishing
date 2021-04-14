@@ -1,4 +1,4 @@
-module fishing
+module github.com/timwmillard/fishing
 
 go 1.16
 

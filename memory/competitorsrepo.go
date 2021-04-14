@@ -2,9 +2,9 @@ package memory
 
 import (
 	"context"
-	"fishing"
 
 	"github.com/google/uuid"
+	"github.com/timwmillard/fishing"
 )
 
 // CompetitorsRepo -

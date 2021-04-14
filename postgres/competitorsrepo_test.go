@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fishing"
 	"log"
 	"regexp"
 	"testing"
@@ -11,6 +10,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/timwmillard/fishing"
 )
 
 var comp1 = fishing.Competitor{
