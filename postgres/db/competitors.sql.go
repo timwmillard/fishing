@@ -5,7 +5,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -21,7 +20,7 @@ RETURNING id, competitor_no, firstname, lastname, email, address1, address2, sub
 
 type CreateCompetitorParams struct {
 	ID           uuid.UUID
-	CompetitorNo sql.NullString
+	CompetitorNo string
 	Firstname    string
 	Lastname     string
 	Email        string
@@ -165,7 +164,7 @@ RETURNING id, competitor_no, firstname, lastname, email, address1, address2, sub
 
 type UpdateCompetitorParams struct {
 	ID           uuid.UUID
-	CompetitorNo sql.NullString
+	CompetitorNo string
 	Firstname    string
 	Lastname     string
 	Email        string

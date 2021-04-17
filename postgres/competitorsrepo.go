@@ -76,7 +76,7 @@ func (r *CompetitorsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 func createCompetitorParams(c fishing.Competitor) db.CreateCompetitorParams {
 	return db.CreateCompetitorParams{
 		ID:           c.ID,
-		CompetitorNo: sql.NullString{String: c.CompetitorNo, Valid: true},
+		CompetitorNo: c.CompetitorNo,
 		Firstname:    c.Firstname,
 		Lastname:     c.Lastname,
 		Email:        c.Email,
@@ -93,7 +93,7 @@ func createCompetitorParams(c fishing.Competitor) db.CreateCompetitorParams {
 func updateCompetitorParams(c fishing.Competitor) db.UpdateCompetitorParams {
 	return db.UpdateCompetitorParams{
 		ID:           c.ID,
-		CompetitorNo: sql.NullString{String: c.CompetitorNo, Valid: true},
+		CompetitorNo: c.CompetitorNo,
 		Firstname:    c.Firstname,
 		Lastname:     c.Lastname,
 		Email:        c.Email,
@@ -119,7 +119,7 @@ func competitors(dbComps []db.Competitor) []fishing.Competitor {
 func competitor(c db.Competitor) fishing.Competitor {
 	return fishing.Competitor{
 		ID:           c.ID,
-		CompetitorNo: nullString(c.CompetitorNo),
+		CompetitorNo: c.CompetitorNo,
 		Firstname:    c.Firstname,
 		Lastname:     c.Lastname,
 		Email:        c.Email,

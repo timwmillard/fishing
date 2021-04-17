@@ -3,14 +3,12 @@
 package db
 
 import (
-	"database/sql"
-
 	"github.com/google/uuid"
 )
 
 type Competitor struct {
 	ID           uuid.UUID
-	CompetitorNo sql.NullString
+	CompetitorNo string
 	Firstname    string
 	Lastname     string
 	Email        string

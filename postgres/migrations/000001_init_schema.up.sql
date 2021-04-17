@@ -30,10 +30,10 @@
 --   boat_rego varchar(20)
 -- );
 
-CREATE TABLE competitors (
+CREATE TABLE IF NOT EXISTS competitors  (
   id uuid NOT NULL PRIMARY KEY,
-  -- event_id uuid,
-  competitor_no varchar(255) DEFAULT '',
+  -- event_id uuid NOT NULL,
+  competitor_no varchar(255) NOT NULL DEFAULT '',
   firstname varchar(255) NOT NULL DEFAULT '',
   lastname varchar(255) NOT NULL DEFAULT '',
   email varchar(255) NOT NULL DEFAULT '',
