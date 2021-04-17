@@ -5,7 +5,7 @@
 
 -- DROP TABLE IF EXISTS  team;
 
-DROP TABLE IF EXISTS  competitors;
+DROP TABLE IF EXISTS  fishing.competitors;
 
 -- DROP TABLE IF EXISTS  catches;
 
@@ -18,3 +18,5 @@ DROP TABLE IF EXISTS  competitors;
 -- DROP TABLE IF EXISTS  clubs;
 
 -- DROP TABLE IF EXISTS  organisation_users;
+
+DROP SCHEMA IF EXISTS fishing;

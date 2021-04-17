@@ -10,7 +10,7 @@ import (
 )
 
 const createCompetitor = `-- name: CreateCompetitor :one
-INSERT INTO competitors (
+INSERT INTO fishing.competitors (
     id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
@@ -33,7 +33,7 @@ type CreateCompetitorParams struct {
 	Mobile       string
 }
 
-func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorParams) (Competitor, error) {
+func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorParams) (FishingCompetitor, error) {
 	row := q.db.QueryRowContext(ctx, createCompetitor,
 		arg.ID,
 		arg.CompetitorNo,
@@ -48,7 +48,7 @@ func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorPara
 		arg.Phone,
 		arg.Mobile,
 	)
-	var i Competitor
+	var i FishingCompetitor
 	err := row.Scan(
 		&i.ID,
 		&i.CompetitorNo,
@@ -67,7 +67,7 @@ func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorPara
 }
 
 const deleteCompetitor = `-- name: DeleteCompetitor :execrows
-DELETE FROM competitors
+DELETE FROM fishing.competitors
 WHERE id = $1
 `
 
@@ -80,13 +80,13 @@ func (q *Queries) DeleteCompetitor(ctx context.Context, id uuid.UUID) (int64, er
 }
 
 const getCompetitor = `-- name: GetCompetitor :one
-SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM fishing.competitors
 WHERE id = $1
 `
 
-func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (Competitor, error) {
+func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (FishingCompetitor, error) {
 	row := q.db.QueryRowContext(ctx, getCompetitor, id)
-	var i Competitor
+	var i FishingCompetitor
 	err := row.Scan(
 		&i.ID,
 		&i.CompetitorNo,
@@ -105,19 +105,19 @@ func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (Competitor, 
 }
 
 const listCompetitors = `-- name: ListCompetitors :many
-SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM fishing.competitors
 ORDER BY competitor_no, lastname, firstname ASC
 `
 
-func (q *Queries) ListCompetitors(ctx context.Context) ([]Competitor, error) {
+func (q *Queries) ListCompetitors(ctx context.Context) ([]FishingCompetitor, error) {
 	rows, err := q.db.QueryContext(ctx, listCompetitors)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Competitor
+	var items []FishingCompetitor
 	for rows.Next() {
-		var i Competitor
+		var i FishingCompetitor
 		if err := rows.Scan(
 			&i.ID,
 			&i.CompetitorNo,
@@ -146,7 +146,7 @@ func (q *Queries) ListCompetitors(ctx context.Context) ([]Competitor, error) {
 }
 
 const updateCompetitor = `-- name: UpdateCompetitor :one
-UPDATE competitors
+UPDATE fishing.competitors
 SET competitor_no = $2,
     firstname = $3,
     lastname = $4,
@@ -177,7 +177,7 @@ type UpdateCompetitorParams struct {
 	Mobile       string
 }
 
-func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorParams) (Competitor, error) {
+func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorParams) (FishingCompetitor, error) {
 	row := q.db.QueryRowContext(ctx, updateCompetitor,
 		arg.ID,
 		arg.CompetitorNo,
@@ -192,7 +192,7 @@ func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorPara
 		arg.Phone,
 		arg.Mobile,
 	)
-	var i Competitor
+	var i FishingCompetitor
 	err := row.Scan(
 		&i.ID,
 		&i.CompetitorNo,

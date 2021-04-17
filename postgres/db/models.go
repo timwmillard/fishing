@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Competitor struct {
+type FishingCompetitor struct {
 	ID           uuid.UUID
 	CompetitorNo string
 	Firstname    string

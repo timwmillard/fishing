@@ -107,7 +107,7 @@ func updateCompetitorParams(c fishing.Competitor) db.UpdateCompetitorParams {
 	}
 }
 
-func competitors(dbComps []db.Competitor) []fishing.Competitor {
+func competitors(dbComps []db.FishingCompetitor) []fishing.Competitor {
 	fishComps := make([]fishing.Competitor, len(dbComps))
 	for _, c := range dbComps {
 		p := competitor(c)
@@ -116,7 +116,7 @@ func competitors(dbComps []db.Competitor) []fishing.Competitor {
 	return fishComps
 }
 
-func competitor(c db.Competitor) fishing.Competitor {
+func competitor(c db.FishingCompetitor) fishing.Competitor {
 	return fishing.Competitor{
 		ID:           c.ID,
 		CompetitorNo: c.CompetitorNo,

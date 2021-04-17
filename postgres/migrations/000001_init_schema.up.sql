@@ -1,4 +1,6 @@
 
+CREATE SCHEMA IF NOT EXISTS fishing;
+
 -- CREATE TABLE competitions (
 --   id uuid NOT NULL PRIMARY KEY,
 --   organisation_id int,
@@ -30,7 +32,7 @@
 --   boat_rego varchar(20)
 -- );
 
-CREATE TABLE IF NOT EXISTS competitors  (
+CREATE TABLE IF NOT EXISTS fishing.competitors  (
   id uuid NOT NULL PRIMARY KEY,
   -- event_id uuid NOT NULL,
   competitor_no varchar(255) NOT NULL DEFAULT '',
