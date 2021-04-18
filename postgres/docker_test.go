@@ -12,12 +12,11 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	migratepg "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
 	"github.com/stretchr/testify/assert"
-	"github.com/timwmillard/fishing"
+	"github.com/timwmillard/fishing/fake"
 	"github.com/timwmillard/fishing/postgres"
 )
 
@@ -28,20 +27,7 @@ var (
 	competitorsRepo *postgres.CompetitorsRepo
 )
 
-var comp1 = fishing.Competitor{
-	ID:           uuid.Must(uuid.NewRandom()),
-	CompetitorNo: "12",
-	Firstname:    "Tim",
-	Lastname:     "Millard",
-	Email:        "tim@example.com",
-	Address1:     "123 Main St",
-	Address2:     "",
-	Suburb:       "Some Town",
-	State:        "VIC",
-	Postcode:     "3000",
-	Phone:        "123456",
-	Mobile:       "04123456",
-}
+var comp1 = fake.Competitor()
 
 func TestMain(m *testing.M) {
 	flag.Parse()
