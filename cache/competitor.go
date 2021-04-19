@@ -8,8 +8,8 @@ import (
 )
 
 type Competitors struct {
-	Cache fishing.CompetitorsRepo
-	Repo  fishing.CompetitorsRepo
+	Cache fishing.CompetitorRepo
+	Repo  fishing.CompetitorRepo
 }
 
 func (cc *Competitors) List(ctx context.Context) ([]fishing.Competitor, error) {

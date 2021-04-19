@@ -32,11 +32,11 @@ func TestCompetitorsHandler_List(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	mockRepo := mock.NewCompetitorsRepo(ctrl)
+	mockRepo := mock.NewCompetitorRepo(ctrl)
 	mockRepo.EXPECT().List(ctx).Return(fakeCompetitors, nil)
 
 	// Create the handler
-	compHandler := NewCompetitorsHandler(mockRepo)
+	compHandler := NewCompetitorHandler(mockRepo)
 	_ = httptest.NewServer(compHandler)
 
 	req := httptest.NewRequest(http.MethodGet, "/competitors/", nil)
@@ -61,7 +61,7 @@ func TestCompetitorsHandler_List(t *testing.T) {
 	// respBody, _ := io.ReadAll(resp.Body)
 }
 
-func TestCompetitorsHanderCreate(t *testing.T) {
+func TestCompetitorHanderCreate(t *testing.T) {
 	reqBody, err := os.Open("testdata/competitors-create-request.json")
 	if err != nil {
 		t.Fatal("Unable to open testdata/competitors-create-request.json")

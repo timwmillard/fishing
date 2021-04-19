@@ -11,19 +11,19 @@ import (
 )
 
 // CompetitorsRepo -
-type CompetitorsRepo struct {
+type CompetitorRepo struct {
 	query *db.Queries
 }
 
 // NewCompetitorsRepo -
-func NewCompetitorsRepo(connection *sql.DB) *CompetitorsRepo {
-	return &CompetitorsRepo{
+func NewCompetitorRepo(connection *sql.DB) *CompetitorRepo {
+	return &CompetitorRepo{
 		query: db.New(connection),
 	}
 }
 
 // List -
-func (r *CompetitorsRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
+func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
 	comps, err := r.query.ListCompetitors(context.TODO())
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (r *CompetitorsRepo) List(ctx context.Context) ([]fishing.Competitor, error
 }
 
 // Get -
-func (r *CompetitorsRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
+func (r *CompetitorRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
 	comp, err := r.query.GetCompetitor(ctx, id)
 	if err != nil {
 		return fishing.Competitor{}, err
@@ -42,7 +42,7 @@ func (r *CompetitorsRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Compet
 }
 
 // Create -
-func (r *CompetitorsRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
+func (r *CompetitorRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	comp, err := r.query.CreateCompetitor(ctx, createCompetitorParams(c))
 	if err != nil {
 		return fishing.Competitor{}, nil
@@ -51,7 +51,7 @@ func (r *CompetitorsRepo) Create(ctx context.Context, c fishing.Competitor) (fis
 }
 
 // Update -
-func (r *CompetitorsRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
+func (r *CompetitorRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	comp, err := r.query.UpdateCompetitor(ctx, updateCompetitorParams(c))
 	if err != nil {
 		return fishing.Competitor{}, nil
@@ -60,7 +60,7 @@ func (r *CompetitorsRepo) Update(ctx context.Context, c fishing.Competitor) (fis
 }
 
 // Delete -
-func (r *CompetitorsRepo) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *CompetitorRepo) Delete(ctx context.Context, id uuid.UUID) error {
 
 	numDeleted, err := r.query.DeleteCompetitor(ctx, id)
 	if err != nil {

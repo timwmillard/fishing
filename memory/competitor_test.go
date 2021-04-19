@@ -22,7 +22,7 @@ var (
 
 func TestCreateAndGet(t *testing.T) {
 	ctx := context.Background()
-	repo := NewCompetitorsRepo()
+	repo := NewCompetitorRepo()
 
 	want, err := repo.Create(ctx, comp1)
 	if err != nil {
@@ -40,7 +40,7 @@ func TestCreateAndGet(t *testing.T) {
 
 func TestCreateAndList(t *testing.T) {
 	ctx := context.Background()
-	repo := NewCompetitorsRepo()
+	repo := NewCompetitorRepo()
 
 	_, err := repo.Create(ctx, comp1)
 	if err != nil {
@@ -63,7 +63,7 @@ func TestCreateAndList(t *testing.T) {
 
 func TestGetCompetitorNotFound(t *testing.T) {
 	ctx := context.Background()
-	repo := NewCompetitorsRepo()
+	repo := NewCompetitorRepo()
 
 	id := uuid.New()
 	_, err := repo.Get(ctx, id)
@@ -74,7 +74,7 @@ func TestGetCompetitorNotFound(t *testing.T) {
 
 func TestCreateAndUpdate(t *testing.T) {
 	ctx := context.Background()
-	repo := NewCompetitorsRepo()
+	repo := NewCompetitorRepo()
 
 	c, err := repo.Create(ctx, comp1)
 	if err != nil {
@@ -96,7 +96,7 @@ func TestCreateAndUpdate(t *testing.T) {
 
 func TestUpdateCompetitorNotFound(t *testing.T) {
 	ctx := context.Background()
-	repo := NewCompetitorsRepo()
+	repo := NewCompetitorRepo()
 	comp1.ID = uuid.New()
 	_, err := repo.Update(ctx, comp1)
 	if err != fishing.ErrCompetitorNotFound {
@@ -106,7 +106,7 @@ func TestUpdateCompetitorNotFound(t *testing.T) {
 
 func TestCreateAndDelete(t *testing.T) {
 	ctx := context.Background()
-	repo := NewCompetitorsRepo()
+	repo := NewCompetitorRepo()
 
 	c, err := repo.Create(ctx, comp1)
 	if err != nil {

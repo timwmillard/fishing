@@ -64,7 +64,7 @@ func TestGet(t *testing.T) {
 
 	ctx := context.Background()
 
-	repo := NewCompetitorsRepo(db)
+	repo := NewCompetitorRepo(db)
 	defer func() {
 		db.Close()
 	}()

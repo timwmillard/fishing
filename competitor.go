@@ -25,7 +25,7 @@ type Competitor struct {
 }
 
 // CompetitorsRepo interface for competitors repository.
-type CompetitorsRepo interface {
+type CompetitorRepo interface {
 	List(ctx context.Context) ([]Competitor, error)
 	Get(ctx context.Context, id uuid.UUID) (Competitor, error)
 	Create(ctx context.Context, c Competitor) (Competitor, error)

@@ -16,7 +16,7 @@ type Server struct {
 	router *mux.Router
 
 	// Handlers
-	competitorsHandler *CompetitorsHandler
+	competitorsHandler *CompetitorHandler
 }
 
 // ListenAndServe -
@@ -29,8 +29,8 @@ func (s *Server) ListenAndServe() error {
 		return fmt.Errorf("database connection error: %v", err)
 	}
 
-	competitorsRepo := postgres.NewCompetitorsRepo(db)
-	s.competitorsHandler = NewCompetitorsHandler(competitorsRepo)
+	competitorRepo := postgres.NewCompetitorRepo(db)
+	s.competitorsHandler = NewCompetitorHandler(competitorRepo)
 
 	// Setup Routing
 	s.routes()

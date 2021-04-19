@@ -24,7 +24,7 @@ var (
 	db       *sql.DB
 	database = "fishingcomp"
 
-	competitorsRepo *postgres.CompetitorsRepo
+	competitorRepo *postgres.CompetitorRepo
 )
 
 var comp1 = fake.Competitor()
@@ -86,7 +86,7 @@ func TestMain(m *testing.M) {
 	}
 	mig.Up()
 
-	competitorsRepo = postgres.NewCompetitorsRepo(db)
+	competitorRepo = postgres.NewCompetitorRepo(db)
 
 	code := m.Run()
 
@@ -104,13 +104,13 @@ func TestCreate(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	c1, err := competitorsRepo.Create(ctx, comp1)
+	c1, err := competitorRepo.Create(ctx, comp1)
 	assert.NoError(t, err)
 	assert.Equal(t, c1.Firstname, comp1.Firstname)
 	assert.Equal(t, c1.Lastname, comp1.Lastname)
 	assert.Equal(t, c1.Email, comp1.Email)
 
-	c2, err := competitorsRepo.Get(ctx, c1.ID)
+	c2, err := competitorRepo.Get(ctx, c1.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, c2.Firstname, comp1.Firstname)
 	assert.Equal(t, c2.Lastname, comp1.Lastname)

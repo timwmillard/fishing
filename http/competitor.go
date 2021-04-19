@@ -11,9 +11,9 @@ import (
 	"github.com/timwmillard/fishing"
 )
 
-// CompetitorsHandler -
-type CompetitorsHandler struct {
-	repo   fishing.CompetitorsRepo
+// CompetitorHandler -
+type CompetitorHandler struct {
+	repo   fishing.CompetitorRepo
 	router *mux.Router
 	log    *log.Logger
 	// errLog  *log.Logger
@@ -21,8 +21,8 @@ type CompetitorsHandler struct {
 }
 
 // NewCompetitorsHandler -
-func NewCompetitorsHandler(repo fishing.CompetitorsRepo) *CompetitorsHandler {
-	return &CompetitorsHandler{
+func NewCompetitorHandler(repo fishing.CompetitorRepo) *CompetitorHandler {
+	return &CompetitorHandler{
 		repo:   repo,
 		router: mux.NewRouter(),
 		log:    log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile),
@@ -30,12 +30,12 @@ func NewCompetitorsHandler(repo fishing.CompetitorsRepo) *CompetitorsHandler {
 }
 
 // ServeHTTP -
-func (c *CompetitorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *CompetitorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c.router.ServeHTTP(w, r)
 }
 
 // List -
-func (c *CompetitorsHandler) List(w http.ResponseWriter, r *http.Request) {
+func (c *CompetitorHandler) List(w http.ResponseWriter, r *http.Request) {
 	competitors, err := c.repo.List(r.Context())
 	if err != nil {
 		c.log.Printf("List Competitors: %v", err)
@@ -47,7 +47,7 @@ func (c *CompetitorsHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get -
-func (c *CompetitorsHandler) Get(w http.ResponseWriter, r *http.Request) {
+func (c *CompetitorHandler) Get(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(mux.Vars(r)["id"])
 	if err != nil {
 		c.log.Printf("Get Competitor: %v", err)
@@ -65,7 +65,7 @@ func (c *CompetitorsHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create -
-func (c *CompetitorsHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (c *CompetitorHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var requestCompetitor fishing.Competitor
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestCompetitor)
@@ -85,7 +85,7 @@ func (c *CompetitorsHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 // Update -
-func (c *CompetitorsHandler) Update(w http.ResponseWriter, r *http.Request) {
+func (c *CompetitorHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var (
 		requestCompetitor fishing.Competitor
 		err               error
@@ -117,7 +117,7 @@ func (c *CompetitorsHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 // Delete -
-func (c *CompetitorsHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *CompetitorHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(mux.Vars(r)["id"])
 	if err != nil {
 		c.log.Printf("Update Competitor: %v", err)
