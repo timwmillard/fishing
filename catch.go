@@ -23,8 +23,8 @@ type Catch struct {
 	Status       int
 }
 
-// CatchesRepo interface
-type CatchesRepo interface {
+// CatchRepo interface
+type CatchRepo interface {
 	List() ([]*Catch, error)
 	Get(id uuid.UUID) (*Catch, error)
 	Create(c *Catch) (*Catch, error)
