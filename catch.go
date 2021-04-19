@@ -25,12 +25,12 @@ type Catch struct {
 
 // CatchRepo interface
 type CatchRepo interface {
-	List() ([]*Catch, error)
-	Get(id uuid.UUID) (*Catch, error)
-	Create(c *Catch) (*Catch, error)
-	Update(id uuid.UUID, c *Catch) (*Catch, error)
+	List() ([]Catch, error)
+	Get(id uuid.UUID) (Catch, error)
+	Create(c Catch) (Catch, error)
+	Update(id uuid.UUID, c Catch) (Catch, error)
 	Delete(id uuid.UUID) error
 
-	ListByCompetitor(competitorID uuid.UUID) ([]*Catch, error)
-	ListByTeam(teamID uuid.UUID) ([]*Catch, error)
+	ListByCompetitor(competitorID uuid.UUID) ([]Catch, error)
+	ListByTeam(teamID uuid.UUID) ([]Catch, error)
 }
