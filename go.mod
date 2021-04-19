@@ -17,6 +17,7 @@ require (
 	github.com/gotestyourself/gotestyourself v1.3.0 // indirect
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428
 	github.com/lib/pq v1.10.0
+	github.com/matryer/is v1.4.0
 	github.com/opencontainers/runc v1.0.0-rc93 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/sirupsen/logrus v1.8.1 // indirect

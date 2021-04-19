@@ -13,9 +13,11 @@ import (
 	migratepg "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
+
+	"github.com/matryer/is"
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
-	"github.com/stretchr/testify/assert"
+
 	"github.com/timwmillard/fishing/fake"
 	"github.com/timwmillard/fishing/postgres"
 )
@@ -102,16 +104,18 @@ func TestCreate(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
+
+	is := is.New(t)
 	ctx := context.Background()
 
 	c1, err := competitorRepo.Create(ctx, comp1)
-	assert.NoError(t, err)
-	assert.Equal(t, c1.Firstname, comp1.Firstname)
-	assert.Equal(t, c1.Lastname, comp1.Lastname)
-	assert.Equal(t, c1.Email, comp1.Email)
+	is.NoErr(err)
+	is.Equal(c1.Firstname, comp1.Firstname)
+	is.Equal(c1.Lastname, comp1.Lastname)
+	is.Equal(c1.Email, comp1.Email)
 
 	c2, err := competitorRepo.Get(ctx, c1.ID)
-	assert.NoError(t, err)
-	assert.Equal(t, c2.Firstname, comp1.Firstname)
-	assert.Equal(t, c2.Lastname, comp1.Lastname)
+	is.NoErr(err)
+	is.Equal(c2.Firstname, comp1.Firstname)
+	is.Equal(c2.Lastname, comp1.Lastname)
 }
