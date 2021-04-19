@@ -13,31 +13,31 @@ import (
 	fishing "github.com/timwmillard/fishing"
 )
 
-// MockCompetitorsRepo is a mock of CompetitorsRepo interface.
-type MockCompetitorsRepo struct {
+// CompetitorsRepo is a mock of CompetitorsRepo interface.
+type CompetitorsRepo struct {
 	ctrl     *gomock.Controller
-	recorder *MockCompetitorsRepoMockRecorder
+	recorder *CompetitorsRepoMockRecorder
 }
 
-// MockCompetitorsRepoMockRecorder is the mock recorder for MockCompetitorsRepo.
-type MockCompetitorsRepoMockRecorder struct {
-	mock *MockCompetitorsRepo
+// CompetitorsRepoMockRecorder is the mock recorder for CompetitorsRepo.
+type CompetitorsRepoMockRecorder struct {
+	mock *CompetitorsRepo
 }
 
-// NewMockCompetitorsRepo creates a new mock instance.
-func NewMockCompetitorsRepo(ctrl *gomock.Controller) *MockCompetitorsRepo {
-	mock := &MockCompetitorsRepo{ctrl: ctrl}
-	mock.recorder = &MockCompetitorsRepoMockRecorder{mock}
+// NewCompetitorsRepo creates a new mock instance.
+func NewCompetitorsRepo(ctrl *gomock.Controller) *CompetitorsRepo {
+	mock := &CompetitorsRepo{ctrl: ctrl}
+	mock.recorder = &CompetitorsRepoMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockCompetitorsRepo) EXPECT() *MockCompetitorsRepoMockRecorder {
+func (m *CompetitorsRepo) EXPECT() *CompetitorsRepoMockRecorder {
 	return m.recorder
 }
 
 // Create mocks base method.
-func (m *MockCompetitorsRepo) Create(arg0 context.Context, arg1 fishing.Competitor) (fishing.Competitor, error) {
+func (m *CompetitorsRepo) Create(arg0 context.Context, arg1 fishing.Competitor) (fishing.Competitor, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
 	ret0, _ := ret[0].(fishing.Competitor)
@@ -46,13 +46,13 @@ func (m *MockCompetitorsRepo) Create(arg0 context.Context, arg1 fishing.Competit
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockCompetitorsRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
+func (mr *CompetitorsRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockCompetitorsRepo)(nil).Create), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*CompetitorsRepo)(nil).Create), arg0, arg1)
 }
 
 // Delete mocks base method.
-func (m *MockCompetitorsRepo) Delete(arg0 context.Context, arg1 uuid.UUID) error {
+func (m *CompetitorsRepo) Delete(arg0 context.Context, arg1 uuid.UUID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -60,13 +60,13 @@ func (m *MockCompetitorsRepo) Delete(arg0 context.Context, arg1 uuid.UUID) error
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockCompetitorsRepoMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
+func (mr *CompetitorsRepoMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockCompetitorsRepo)(nil).Delete), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*CompetitorsRepo)(nil).Delete), arg0, arg1)
 }
 
 // Get mocks base method.
-func (m *MockCompetitorsRepo) Get(arg0 context.Context, arg1 uuid.UUID) (fishing.Competitor, error) {
+func (m *CompetitorsRepo) Get(arg0 context.Context, arg1 uuid.UUID) (fishing.Competitor, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", arg0, arg1)
 	ret0, _ := ret[0].(fishing.Competitor)
@@ -75,13 +75,13 @@ func (m *MockCompetitorsRepo) Get(arg0 context.Context, arg1 uuid.UUID) (fishing
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockCompetitorsRepoMockRecorder) Get(arg0, arg1 interface{}) *gomock.Call {
+func (mr *CompetitorsRepoMockRecorder) Get(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCompetitorsRepo)(nil).Get), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*CompetitorsRepo)(nil).Get), arg0, arg1)
 }
 
 // List mocks base method.
-func (m *MockCompetitorsRepo) List(arg0 context.Context) ([]fishing.Competitor, error) {
+func (m *CompetitorsRepo) List(arg0 context.Context) ([]fishing.Competitor, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", arg0)
 	ret0, _ := ret[0].([]fishing.Competitor)
@@ -90,13 +90,13 @@ func (m *MockCompetitorsRepo) List(arg0 context.Context) ([]fishing.Competitor, 
 }
 
 // List indicates an expected call of List.
-func (mr *MockCompetitorsRepoMockRecorder) List(arg0 interface{}) *gomock.Call {
+func (mr *CompetitorsRepoMockRecorder) List(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockCompetitorsRepo)(nil).List), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*CompetitorsRepo)(nil).List), arg0)
 }
 
 // Update mocks base method.
-func (m *MockCompetitorsRepo) Update(arg0 context.Context, arg1 fishing.Competitor) (fishing.Competitor, error) {
+func (m *CompetitorsRepo) Update(arg0 context.Context, arg1 fishing.Competitor) (fishing.Competitor, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1)
 	ret0, _ := ret[0].(fishing.Competitor)
@@ -105,7 +105,7 @@ func (m *MockCompetitorsRepo) Update(arg0 context.Context, arg1 fishing.Competit
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockCompetitorsRepoMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
+func (mr *CompetitorsRepoMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockCompetitorsRepo)(nil).Update), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*CompetitorsRepo)(nil).Update), arg0, arg1)
 }
