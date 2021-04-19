@@ -2,14 +2,14 @@ package http
 
 import (
 	"context"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/timwmillard/fishing"
+	"github.com/timwmillard/fishing/fake"
 	"github.com/timwmillard/fishing/mock"
 )
 
@@ -28,8 +28,12 @@ func TestCompetitorsHandler_List(t *testing.T) {
 
 	ctx := context.Background()
 
-	mockRepo := &mock.CompetitorsRepo{}
-	mockRepo.On("List", ctx).Return([]fishing.Competitor{comp1, comp2}, nil)
+	fakeCompetitors := fake.Competitors(2)
+
+	ctrl := gomock.NewController(t)
+
+	mockRepo := mock.NewCompetitorsRepo(ctrl)
+	mockRepo.EXPECT().List(ctx).Return(fakeCompetitors, nil)
 
 	// Create the handler
 	compHandler := NewCompetitorsHandler(mockRepo)
@@ -42,17 +46,17 @@ func TestCompetitorsHandler_List(t *testing.T) {
 	compHandler.List(w, req)
 
 	// competitors := make([]fishing.Competitor, 2)
-	resp := w.Result()
+	// resp := w.Result()
 	// decoder := json.NewDecoder(resp.Body)
 	// err := decoder.Decode(&competitors)
 	// if err != nil {
 	// 	t.Fatalf("json.Decode: %v", err)
 	// }
-	output, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("ioutil.ReadAll(resp.Body) err = %v", err)
-	}
-	fmt.Printf("competitors %v", string(output))
+	// output, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	t.Fatalf("ioutil.ReadAll(resp.Body) err = %v", err)
+	// }
+	// fmt.Printf("competitors %v", string(output))
 
 	// respBody, _ := io.ReadAll(resp.Body)
 }

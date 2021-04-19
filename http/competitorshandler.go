@@ -22,25 +22,11 @@ type CompetitorsHandler struct {
 
 // NewCompetitorsHandler -
 func NewCompetitorsHandler(repo fishing.CompetitorsRepo) *CompetitorsHandler {
-
-	h := &CompetitorsHandler{
+	return &CompetitorsHandler{
 		repo:   repo,
 		router: mux.NewRouter(),
 		log:    log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile),
 	}
-
-	// middleware
-	h.router.Use(jsonMiddleware)
-	h.router.Use(corsMiddleware)
-
-	// routes
-	h.router.HandleFunc("/competitors", h.List).Methods("GET")           // Get all contacts
-	h.router.HandleFunc("/competitors/{id}", h.Get).Methods("GET")       // Get contact
-	h.router.HandleFunc("/competitors", h.Create).Methods("POST")        // Create a contact
-	h.router.HandleFunc("/competitors/{id}", h.Update).Methods("PUT")    // Update a contact
-	h.router.HandleFunc("/competitors/{id}", h.Delete).Methods("DELETE") // Update a contact
-
-	return h
 }
 
 // ServeHTTP -
