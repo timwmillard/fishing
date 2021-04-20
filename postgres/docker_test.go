@@ -35,7 +35,7 @@ func TestMain(m *testing.M) {
 	flag.Parse()
 	if testing.Short() {
 		m.Run()
-		os.Exit(0)
+		return
 	}
 	var err error
 	pool, err := dockertest.NewPool("")
@@ -99,7 +99,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestCreate(t *testing.T) {
+func TestDockerCreate(t *testing.T) {
 	// db.Query()
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")

@@ -4,29 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"reflect"
 	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/timwmillard/fishing"
+	"github.com/matryer/is"
+	"github.com/timwmillard/fishing/fake"
 )
-
-var comp1 = fishing.Competitor{
-	ID:           uuid.Must(uuid.NewRandom()),
-	CompetitorNo: "12",
-	Firstname:    "Tim",
-	Lastname:     "Millard",
-	Email:        "tim@example.com",
-	Address1:     "123 Main St",
-	Address2:     "",
-	Suburb:       "Some Town",
-	State:        "VIC",
-	Postcode:     "3000",
-	Phone:        "123456",
-	Mobile:       "04123456",
-}
 
 func NewMock() (*sql.DB, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New()
@@ -43,6 +28,10 @@ WHERE id = $1
 `
 
 func TestGet(t *testing.T) {
+	is := is.New(t)
+
+	comp1 := fake.Competitor()
+
 	db, mock := NewMock()
 	rows := sqlmock.NewRows([]string{"id", "competitor_no", "firstname", "lastname", "email", "address1", "address2", "suburb", "state", "postcode", "phone", "mobile"}).
 		AddRow(
@@ -60,7 +49,8 @@ func TestGet(t *testing.T) {
 			comp1.Mobile,
 		)
 
-	mock.ExpectQuery(regexp.QuoteMeta(getCompetitor)).WithArgs(comp1.ID).WillReturnRows(rows)
+	result := mock.ExpectQuery(regexp.QuoteMeta(getCompetitor)).WithArgs(comp1.ID).WillReturnRows(rows)
+	t.Log("Expected Query: ", result)
 
 	ctx := context.Background()
 
@@ -70,6 +60,7 @@ func TestGet(t *testing.T) {
 	}()
 
 	got, err := repo.Get(ctx, comp1.ID)
-	assert.NotNil(t, got)
-	assert.NoError(t, err)
+	is.NoErr(err)
+	is.True(reflect.DeepEqual(got, comp1))
+
 }
