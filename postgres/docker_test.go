@@ -7,14 +7,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/golang-migrate/migrate/v4"
 	migratepg "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
-
 	"github.com/matryer/is"
+
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
 
@@ -22,14 +23,16 @@ import (
 	"github.com/timwmillard/fishing/postgres"
 )
 
-var (
-	db       *sql.DB
-	database = "fishingcomp"
-
-	competitorRepo *postgres.CompetitorRepo
+const (
+	dockerPostgresUser     = "root"
+	dockerPostgresPassword = "fish"
+	dockerDatabase         = "fishingcomp"
 )
 
-var comp1 = fake.Competitor()
+var (
+	db             *sql.DB
+	competitorRepo *postgres.CompetitorRepo
+)
 
 func TestMain(m *testing.M) {
 	flag.Parse()
@@ -37,6 +40,11 @@ func TestMain(m *testing.M) {
 		m.Run()
 		return
 	}
+	code := setupTestDocker(m)
+	os.Exit(code)
+}
+
+func setupTestDocker(m *testing.M) int {
 	var err error
 	pool, err := dockertest.NewPool("")
 	if err != nil {
@@ -47,9 +55,9 @@ func TestMain(m *testing.M) {
 		Repository: "postgres",
 		Tag:        "12-alpine",
 		Env: []string{
-			"POSTGRES_USER=root",
-			"POSTGRES_PASSWORD=fish",
-			"POSTGRES_DB=" + database,
+			"POSTGRES_USER=" + dockerPostgresUser,
+			"POSTGRES_PASSWORD=" + dockerPostgresPassword,
+			"POSTGRES_DB=" + dockerDatabase,
 		},
 		ExposedPorts: []string{"5432"},
 		PortBindings: map[docker.Port][]docker.PortBinding{
@@ -63,10 +71,17 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
+	defer func() {
+		// When you're done, kill and remove the container
+		if err = pool.Purge(resource); err != nil {
+			log.Fatalf("Could not purge resource: %s", err)
+		}
+	}()
 
 	if err = pool.Retry(func() error {
 		var err error
-		db, err = sql.Open("postgres", fmt.Sprintf("postgres://root:fish@localhost:%s/%s?sslmode=disable", resource.GetPort("5432/tcp"), database))
+		source := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", dockerPostgresUser, dockerPostgresPassword, resource.GetPort("5432/tcp"), dockerDatabase)
+		db, err = sql.Open("postgres", source)
 		if err != nil {
 			return err
 		}
@@ -90,16 +105,10 @@ func TestMain(m *testing.M) {
 
 	competitorRepo = postgres.NewCompetitorRepo(db)
 
-	code := m.Run()
-
-	// When you're done, kill and remove the container
-	if err = pool.Purge(resource); err != nil {
-		log.Fatalf("Could not purge resource: %s", err)
-	}
-	os.Exit(code)
+	return m.Run()
 }
 
-func TestDockerCreate(t *testing.T) {
+func TestCompetitorCreate_docker(t *testing.T) {
 	// db.Query()
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
@@ -108,14 +117,33 @@ func TestDockerCreate(t *testing.T) {
 	is := is.New(t)
 	ctx := context.Background()
 
+	comp1 := fake.Competitor()
+
 	c1, err := competitorRepo.Create(ctx, comp1)
 	is.NoErr(err)
-	is.Equal(c1.Firstname, comp1.Firstname)
-	is.Equal(c1.Lastname, comp1.Lastname)
-	is.Equal(c1.Email, comp1.Email)
+	is.True(reflect.DeepEqual(c1, comp1))
 
 	c2, err := competitorRepo.Get(ctx, c1.ID)
 	is.NoErr(err)
-	is.Equal(c2.Firstname, comp1.Firstname)
-	is.Equal(c2.Lastname, comp1.Lastname)
+	is.True(reflect.DeepEqual(c2, comp1))
 }
+
+// func TestCompetitorList_docker(t *testing.T) {
+// 	// db.Query()
+// 	if testing.Short() {
+// 		t.Skip("skipping test in short mode.")
+// 	}
+
+// 	is := is.New(t)
+// 	ctx := context.Background()
+
+// 	want := fake.Competitors(5)
+// 	for _, comp := range want {
+// 		_, err := competitorRepo.Create(ctx, comp)
+// 		is.NoErr(err)
+// 	}
+
+// 	got, err := competitorRepo.List(ctx)
+// 	is.NoErr(err)
+// 	is.Equal(len(got), len(want))
+// }
