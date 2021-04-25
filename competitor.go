@@ -21,7 +21,7 @@ type Competitor struct {
 	Postcode     string    `json:"postcode,omitempty"  db:"postcode"`
 	Phone        string    `json:"phone,omitempty"  db:"phone"`
 	Mobile       string    `json:"mobile,omitempty"  db:"mobile"`
-	EventID      uuid.UUID `json:"event_id,omitempty" db:"event_id"`
+	// EventID      uuid.UUID `json:"event_id,omitempty" db:"event_id"`
 }
 
 // CompetitorsRepo interface for competitors repository.

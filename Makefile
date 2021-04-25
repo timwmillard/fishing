@@ -4,6 +4,9 @@ all:
 test:
 	go test ./...
 
+integration-test:
+	go test -tags=integration ./...
+
 gen:
 	go generate ./...
 

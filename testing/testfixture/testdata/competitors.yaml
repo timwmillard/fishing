@@ -1,0 +1,16 @@
+# competitors.yml
+- id: 1
+  firstname: Tim
+  surname: Millard
+  email: tim@millard.com
+  created_at: RAW=NOW()
+  updated_at: RAW=NOW()
+
+- id: 2
+  firstname: John
+  surname: Doe
+  email: john@doe.com
+  created_at: RAW=NOW()
+  updated_at: RAW=NOW()
+
+# ...

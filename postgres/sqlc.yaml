@@ -5,3 +5,4 @@ packages:
     queries: "queries/"
     schema: "migrations/"
     engine: "postgresql"
+    emit_interface: true

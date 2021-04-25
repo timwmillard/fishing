@@ -12,7 +12,7 @@ import (
 
 // CompetitorsRepo -
 type CompetitorRepo struct {
-	query *db.Queries
+	query db.Querier
 }
 
 // NewCompetitorsRepo -
@@ -22,9 +22,15 @@ func NewCompetitorRepo(connection *sql.DB) *CompetitorRepo {
 	}
 }
 
+func newCompetitorRepoWithQuerier(q db.Querier) *CompetitorRepo {
+	return &CompetitorRepo{
+		query: q,
+	}
+}
+
 // List -
 func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
-	comps, err := r.query.ListCompetitors(context.TODO())
+	comps, err := r.query.ListCompetitors(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +51,7 @@ func (r *CompetitorRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competi
 func (r *CompetitorRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	comp, err := r.query.CreateCompetitor(ctx, createCompetitorParams(c))
 	if err != nil {
-		return fishing.Competitor{}, nil
+		return fishing.Competitor{}, err
 	}
 	return competitor(comp), nil
 }
@@ -54,7 +60,7 @@ func (r *CompetitorRepo) Create(ctx context.Context, c fishing.Competitor) (fish
 func (r *CompetitorRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	comp, err := r.query.UpdateCompetitor(ctx, updateCompetitorParams(c))
 	if err != nil {
-		return fishing.Competitor{}, nil
+		return fishing.Competitor{}, err
 	}
 	return competitor(comp), nil
 }
@@ -74,41 +80,15 @@ func (r *CompetitorRepo) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 func createCompetitorParams(c fishing.Competitor) db.CreateCompetitorParams {
-	return db.CreateCompetitorParams{
-		ID:           c.ID,
-		CompetitorNo: c.CompetitorNo,
-		Firstname:    c.Firstname,
-		Lastname:     c.Lastname,
-		Email:        c.Email,
-		Address1:     c.Address1,
-		Address2:     c.Address2,
-		Suburb:       c.Suburb,
-		State:        c.State,
-		Postcode:     c.Postcode,
-		Phone:        c.Phone,
-		Mobile:       c.Mobile,
-	}
+	return db.CreateCompetitorParams(c)
 }
 
 func updateCompetitorParams(c fishing.Competitor) db.UpdateCompetitorParams {
-	return db.UpdateCompetitorParams{
-		ID:           c.ID,
-		CompetitorNo: c.CompetitorNo,
-		Firstname:    c.Firstname,
-		Lastname:     c.Lastname,
-		Email:        c.Email,
-		Address1:     c.Address1,
-		Address2:     c.Address2,
-		Suburb:       c.Suburb,
-		State:        c.State,
-		Postcode:     c.Postcode,
-		Phone:        c.Phone,
-		Mobile:       c.Mobile,
-	}
+	return db.UpdateCompetitorParams(c)
 }
 
 func competitors(dbComps []db.FishingCompetitor) []fishing.Competitor {
-	fishComps := make([]fishing.Competitor, len(dbComps))
+	fishComps := make([]fishing.Competitor, 0, len(dbComps))
 	for _, c := range dbComps {
 		p := competitor(c)
 		fishComps = append(fishComps, p)
@@ -117,19 +97,5 @@ func competitors(dbComps []db.FishingCompetitor) []fishing.Competitor {
 }
 
 func competitor(c db.FishingCompetitor) fishing.Competitor {
-	return fishing.Competitor{
-		ID:           c.ID,
-		CompetitorNo: c.CompetitorNo,
-		Firstname:    c.Firstname,
-		Lastname:     c.Lastname,
-		Email:        c.Email,
-		Address1:     c.Address1,
-		Address2:     c.Address2,
-		Suburb:       c.Suburb,
-		State:        c.State,
-		Postcode:     c.Postcode,
-		Phone:        c.Phone,
-		Mobile:       c.Mobile,
-		// EventID:      c.EventID,
-	}
+	return fishing.Competitor(c)
 }

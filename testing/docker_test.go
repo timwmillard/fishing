@@ -1,9 +1,10 @@
-package postgres_test
+// +build integration
+
+package testing
 
 import (
 	"context"
 	"database/sql"
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -35,20 +36,19 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	flag.Parse()
-	if testing.Short() {
-		m.Run()
-		return
+	err := setupDockerPostres()
+	if err != nil {
+		log.Fatalf("setup docker postres: %v", err)
 	}
-	code := setupTestDocker(m)
+	code := m.Run()
 	os.Exit(code)
 }
 
-func setupTestDocker(m *testing.M) int {
+func setupDockerPostres() error {
 	var err error
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+		return fmt.Errorf("could not connect to docker: %v", err)
 	}
 
 	opts := dockertest.RunOptions{
@@ -69,12 +69,12 @@ func setupTestDocker(m *testing.M) int {
 
 	resource, err := pool.RunWithOptions(&opts)
 	if err != nil {
-		log.Fatalf("Could not start resource: %s", err)
+		return fmt.Errorf("could not start resource: %v", err)
 	}
 	defer func() {
 		// When you're done, kill and remove the container
 		if err = pool.Purge(resource); err != nil {
-			log.Fatalf("Could not purge resource: %s", err)
+			log.Printf("could not purge resource: %v", err)
 		}
 	}()
 
@@ -88,31 +88,27 @@ func setupTestDocker(m *testing.M) int {
 
 		return db.Ping()
 	}); err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+		return fmt.Errorf("connect to postgres: %v", err)
 	}
 
 	driver, err := migratepg.WithInstance(db, &migratepg.Config{})
 	if err != nil {
-		log.Fatalf("Could not migrate driver: %s", err)
+		return fmt.Errorf("migrate driver: %v", err)
 	}
 	mig, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
+		"file://../postgres/migrations",
 		"postgres", driver)
 	if err != nil {
-		log.Fatalf("Could not migrate new database instance: %s", err)
+		return fmt.Errorf("migrate new database instance: %v", err)
 	}
 	mig.Up()
 
 	competitorRepo = postgres.NewCompetitorRepo(db)
 
-	return m.Run()
+	return nil
 }
 
-func TestCompetitorCreate_docker(t *testing.T) {
-	// db.Query()
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
+func TestCompetitorRepo_Create(t *testing.T) {
 
 	is := is.New(t)
 	ctx := context.Background()
@@ -121,6 +117,9 @@ func TestCompetitorCreate_docker(t *testing.T) {
 
 	c1, err := competitorRepo.Create(ctx, comp1)
 	is.NoErr(err)
+	is.Equal(c1.Firstname, comp1.Firstname)
+	is.Equal(c1.Lastname, comp1.Lastname)
+	is.Equal(c1.Email, comp1.Email)
 	is.True(reflect.DeepEqual(c1, comp1))
 
 	c2, err := competitorRepo.Get(ctx, c1.ID)
