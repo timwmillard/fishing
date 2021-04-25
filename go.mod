@@ -10,7 +10,6 @@ require (
 	github.com/containerd/continuity v0.0.0-20210315143101-93e15499afd5 // indirect
 	github.com/corpix/uarand v0.1.1 // indirect
 	github.com/golang-migrate/migrate/v4 v4.14.1
-	github.com/golang/mock v1.4.4
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gotestyourself/gotestyourself v1.3.0 // indirect

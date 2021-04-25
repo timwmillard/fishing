@@ -2,12 +2,13 @@ package http
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
+	"reflect"
 	"testing"
 
-	"github.com/golang/mock/gomock"
+	"github.com/matryer/is"
 	"github.com/timwmillard/fishing"
 	"github.com/timwmillard/fishing/fake"
 	"github.com/timwmillard/fishing/mock"
@@ -25,46 +26,32 @@ var (
 )
 
 func TestCompetitorsHandler_List(t *testing.T) {
+	is := is.New(t)
 
-	ctx := context.Background()
+	want := fake.Competitors(2)
 
-	fakeCompetitors := fake.Competitors(2)
-
-	ctrl := gomock.NewController(t)
-
-	mockRepo := mock.NewCompetitorRepo(ctrl)
-	mockRepo.EXPECT().List(ctx).Return(fakeCompetitors, nil)
-
-	// Create the handler
-	compHandler := NewCompetitorHandler(mockRepo)
-	_ = httptest.NewServer(compHandler)
+	mockRepo := &mock.CompetitorRepo{}
+	mockRepo.ListFunc = func(ctx context.Context) ([]fishing.Competitor, error) {
+		return want, nil
+	}
 
 	req := httptest.NewRequest(http.MethodGet, "/competitors/", nil)
 	w := httptest.NewRecorder()
 
-	// Call the handler
+	compHandler := NewCompetitorHandler(mockRepo)
+
+	// SUT
 	compHandler.List(w, req)
 
-	// competitors := make([]fishing.Competitor, 2)
-	// resp := w.Result()
-	// decoder := json.NewDecoder(resp.Body)
-	// err := decoder.Decode(&competitors)
-	// if err != nil {
-	// 	t.Fatalf("json.Decode: %v", err)
-	// }
-	// output, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	t.Fatalf("ioutil.ReadAll(resp.Body) err = %v", err)
-	// }
-	// fmt.Printf("competitors %v", string(output))
+	is.Equal(http.StatusOK, w.Code)
+	is.True(mockRepo.ListInvoked)
 
-	// respBody, _ := io.ReadAll(resp.Body)
-}
+	got := make([]fishing.Competitor, 2)
+	json.Unmarshal(w.Body.Bytes(), &got)
 
-func TestCompetitorHanderCreate(t *testing.T) {
-	reqBody, err := os.Open("testdata/competitors-create-request.json")
-	if err != nil {
-		t.Fatal("Unable to open testdata/competitors-create-request.json")
+	if !reflect.DeepEqual(got, want) {
+		t.Logf("got %v\n", got)
+		t.Logf("want %v\n", want)
+		t.Errorf("deep equal failed")
 	}
-	httptest.NewRequest(http.MethodGet, "/competitors/", reqBody)
 }
