@@ -239,6 +239,28 @@ func TestCompetitorRepo_Delete_error(t *testing.T) {
 	is.True(queries.DeleteCompetitorInvoked)
 }
 
+func TestCompetitorRepo_Delete_not_found(t *testing.T) {
+	is := is.New(t)
+	ctx := context.Background()
+
+	compID := uuid.New()
+
+	queries := &mock.CompetitorQueries{}
+	queries.DeleteCompetitorFunc = func(ctx context.Context, id uuid.UUID) (int64, error) {
+		is.Equal(compID, id)
+		return 0, nil
+	}
+
+	repo := newCompetitorRepoWithQuerier(queries)
+
+	// SUT
+	err := repo.Delete(ctx, compID)
+	if err != fishing.ErrCompetitorNotFound {
+		t.Errorf("error should be ErrCompetitorNotFound but got %v", err)
+	}
+	is.True(queries.DeleteCompetitorInvoked)
+}
+
 func TestCompetitor(t *testing.T) {
 	is := is.New(t)
 
