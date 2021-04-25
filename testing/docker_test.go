@@ -7,7 +7,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"testing"
 
@@ -36,15 +35,14 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	err := setupDockerPostres()
+	err := setupDockerPostres(m)
 	if err != nil {
 		log.Fatalf("setup docker postres: %v", err)
 	}
-	code := m.Run()
-	os.Exit(code)
+	// os.Exit(code)
 }
 
-func setupDockerPostres() error {
+func setupDockerPostres(m *testing.M) error {
 	var err error
 	pool, err := dockertest.NewPool("")
 	if err != nil {
@@ -83,12 +81,12 @@ func setupDockerPostres() error {
 		source := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", dockerPostgresUser, dockerPostgresPassword, resource.GetPort("5432/tcp"), dockerDatabase)
 		db, err = sql.Open("postgres", source)
 		if err != nil {
-			return err
+			return fmt.Errorf("connect to postgres: %v", err)
 		}
 
 		return db.Ping()
 	}); err != nil {
-		return fmt.Errorf("connect to postgres: %v", err)
+		return fmt.Errorf("pool retry: %v", err)
 	}
 
 	driver, err := migratepg.WithInstance(db, &migratepg.Config{})
@@ -104,6 +102,8 @@ func setupDockerPostres() error {
 	mig.Up()
 
 	competitorRepo = postgres.NewCompetitorRepo(db)
+
+	m.Run()
 
 	return nil
 }
