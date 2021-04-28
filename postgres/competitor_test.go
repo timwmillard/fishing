@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"testing"
 
@@ -102,6 +103,29 @@ func TestCompetitorRepo_Get_error(t *testing.T) {
 	is.True(queries.GetCompetitorInvoked)
 }
 
+func TestCompetitorRepo_Get_not_found(t *testing.T) {
+	is := is.New(t)
+	ctx := context.Background()
+
+	compID := uuid.New()
+
+	queries := &mock.CompetitorQueries{}
+	queries.GetCompetitorFunc = func(ctx context.Context, id uuid.UUID) (db.FishingCompetitor, error) {
+		is.Equal(compID, id)
+		return db.FishingCompetitor{}, sql.ErrNoRows
+	}
+
+	repo := newCompetitorRepoWithQuerier(queries)
+
+	// SUT
+	_, err := repo.Get(ctx, compID)
+	if err == nil {
+		t.Errorf("err == nil")
+	}
+	is.Equal(err, fishing.ErrCompetitorNotFound)
+	is.True(queries.GetCompetitorInvoked)
+}
+
 func TestCompetitorRepo_Update(t *testing.T) {
 	is := is.New(t)
 	ctx := context.Background()
@@ -149,6 +173,30 @@ func TestCompetitorRepo_Update_error(t *testing.T) {
 	if err == nil {
 		t.Errorf("err == nil")
 	}
+	is.True(queries.UpdateCompetitorInvoked)
+}
+
+func TestCompetitorRepo_Update_not_found(t *testing.T) {
+	is := is.New(t)
+	ctx := context.Background()
+
+	compID := uuid.New()
+
+	queries := &mock.CompetitorQueries{}
+	queries.UpdateCompetitorFunc = func(ctx context.Context, arg db.UpdateCompetitorParams) (db.FishingCompetitor, error) {
+		is.Equal(compID, arg.ID)
+		return db.FishingCompetitor{}, sql.ErrNoRows
+	}
+
+	repo := newCompetitorRepoWithQuerier(queries)
+	want := fishing.Competitor{ID: compID, Firstname: "Tim", Lastname: "Millard"}
+
+	// SUT
+	_, err := repo.Update(ctx, want)
+	if err == nil {
+		t.Errorf("err == nil")
+	}
+	is.Equal(err, fishing.ErrCompetitorNotFound)
 	is.True(queries.UpdateCompetitorInvoked)
 }
 
@@ -255,9 +303,7 @@ func TestCompetitorRepo_Delete_not_found(t *testing.T) {
 
 	// SUT
 	err := repo.Delete(ctx, compID)
-	if err != fishing.ErrCompetitorNotFound {
-		t.Errorf("error should be ErrCompetitorNotFound but got %v", err)
-	}
+	is.Equal(err, fishing.ErrCompetitorNotFound)
 	is.True(queries.DeleteCompetitorInvoked)
 }
 

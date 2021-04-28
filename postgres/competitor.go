@@ -44,6 +44,9 @@ func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error)
 func (r *CompetitorRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
 	comp, err := r.query.GetCompetitor(ctx, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			err = fishing.ErrCompetitorNotFound
+		}
 		return fishing.Competitor{}, err
 	}
 	return competitor(comp), nil
@@ -62,6 +65,9 @@ func (r *CompetitorRepo) Create(ctx context.Context, c fishing.Competitor) (fish
 func (r *CompetitorRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	comp, err := r.query.UpdateCompetitor(ctx, updateCompetitorParams(c))
 	if err != nil {
+		if err == sql.ErrNoRows {
+			err = fishing.ErrCompetitorNotFound
+		}
 		return fishing.Competitor{}, err
 	}
 	return competitor(comp), nil
