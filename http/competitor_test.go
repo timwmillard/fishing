@@ -11,14 +11,13 @@ import (
 
 	"github.com/matryer/is"
 	"github.com/timwmillard/fishing"
-	"github.com/timwmillard/fishing/fake"
 	"github.com/timwmillard/fishing/mock"
 )
 
 func TestCompetitorsHandler_List(t *testing.T) {
 	is := is.New(t)
 
-	want := fake.Competitors(2)
+	want := mock.Competitors(2)
 
 	mockRepo := &mock.CompetitorRepo{}
 	mockRepo.ListFunc = func(ctx context.Context) ([]fishing.Competitor, error) {

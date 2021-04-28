@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/icrowley/fake"
 	"github.com/timwmillard/fishing/postgres/db"
 )
 
@@ -53,4 +54,26 @@ func (q *CompetitorQueries) ListCompetitors(ctx context.Context) ([]db.FishingCo
 func (q *CompetitorQueries) UpdateCompetitor(ctx context.Context, arg db.UpdateCompetitorParams) (db.FishingCompetitor, error) {
 	q.UpdateCompetitorInvoked = true
 	return q.UpdateCompetitorFunc(ctx, arg)
+}
+
+func Competitor() db.FishingCompetitor {
+	return db.FishingCompetitor{
+		ID:        uuid.New(),
+		Firstname: fake.FirstName(),
+		Lastname:  fake.LastName(),
+		Email:     fake.EmailAddress(),
+		Address1:  fake.StreetAddress(),
+		Suburb:    fake.City(),
+		Postcode:  fake.DigitsN(4),
+		Phone:     fake.Phone(),
+		Mobile:    fake.Phone(),
+	}
+}
+
+func Competitors(n int) []db.FishingCompetitor {
+	comps := make([]db.FishingCompetitor, n)
+	for i := 0; i < n; i++ {
+		comps[i] = Competitor()
+	}
+	return comps
 }

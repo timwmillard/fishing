@@ -17,10 +17,12 @@ func TestCompetitorRepo_List(t *testing.T) {
 	is := is.New(t)
 	ctx := context.Background()
 
-	want := []db.FishingCompetitor{
-		{ID: uuid.New(), Firstname: "Tim", Lastname: "Millard"},
-		{ID: uuid.New(), Firstname: "John", Lastname: "Doe"},
-	}
+	// want := []db.FishingCompetitor{
+	// 	{ID: uuid.New(), Firstname: "Tim", Lastname: "Millard"},
+	// 	{ID: uuid.New(), Firstname: "John", Lastname: "Doe"},
+	// }
+
+	want := mock.Competitors(2)
 
 	queries := &mock.CompetitorQueries{}
 	queries.ListCompetitorsFunc = func(ctx context.Context) ([]db.FishingCompetitor, error) { return want, nil }

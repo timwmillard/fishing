@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/icrowley/fake"
 	"github.com/timwmillard/fishing"
 )
 
@@ -53,4 +54,26 @@ func (cm *CompetitorRepo) Update(ctx context.Context, c fishing.Competitor) (fis
 func (cm *CompetitorRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	cm.DeleteInvoked = true
 	return cm.DeleteFunc(ctx, id)
+}
+
+func Competitor() fishing.Competitor {
+	return fishing.Competitor{
+		ID:        uuid.New(),
+		Firstname: fake.FirstName(),
+		Lastname:  fake.LastName(),
+		Email:     fake.EmailAddress(),
+		Address1:  fake.StreetAddress(),
+		Suburb:    fake.City(),
+		Postcode:  fake.DigitsN(4),
+		Phone:     fake.Phone(),
+		Mobile:    fake.Phone(),
+	}
+}
+
+func Competitors(n int) []fishing.Competitor {
+	comps := make([]fishing.Competitor, n)
+	for i := 0; i < n; i++ {
+		comps[i] = Competitor()
+	}
+	return comps
 }

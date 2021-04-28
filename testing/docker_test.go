@@ -19,7 +19,7 @@ import (
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
 
-	"github.com/timwmillard/fishing/fake"
+	"github.com/timwmillard/fishing/mock"
 	"github.com/timwmillard/fishing/postgres"
 )
 
@@ -113,7 +113,7 @@ func TestCompetitorRepo_Create(t *testing.T) {
 	is := is.New(t)
 	ctx := context.Background()
 
-	comp1 := fake.Competitor()
+	comp1 := mock.Competitor()
 
 	c1, err := competitorRepo.Create(ctx, comp1)
 	is.NoErr(err)
