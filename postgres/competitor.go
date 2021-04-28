@@ -1,4 +1,4 @@
-// Postgres implementation of CompetitorsRepo
+// Postgres implementation of CompetitorRepo
 package postgres
 
 import (
