@@ -10,6 +10,8 @@ import (
 	"github.com/timwmillard/fishing/postgres/db"
 )
 
+var _ fishing.CompetitorRepo = (*CompetitorRepo)(nil)
+
 // CompetitorRepo is a repository of competitors.
 type CompetitorRepo struct {
 	query db.Querier

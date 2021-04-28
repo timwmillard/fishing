@@ -8,6 +8,8 @@ import (
 	"github.com/timwmillard/fishing/postgres/db"
 )
 
+var _ db.Querier = (*CompetitorQueries)(nil)
+
 type CompetitorQueries struct {
 	// List
 	ListCompetitorsFunc    func(ctx context.Context) ([]db.FishingCompetitor, error)

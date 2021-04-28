@@ -7,6 +7,8 @@ import (
 	"github.com/timwmillard/fishing"
 )
 
+var _ fishing.CompetitorRepo = (*CompetitorRepo)(nil)
+
 // CompetitorsRepo -
 type CompetitorRepo struct {
 	data map[uuid.UUID]fishing.Competitor

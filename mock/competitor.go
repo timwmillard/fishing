@@ -8,6 +8,8 @@ import (
 	"github.com/timwmillard/fishing"
 )
 
+var _ fishing.CompetitorRepo = (*CompetitorRepo)(nil)
+
 type CompetitorRepo struct {
 
 	// List
