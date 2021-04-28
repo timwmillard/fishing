@@ -1,4 +1,4 @@
-// Postgres implementation of CompetitorRepo
+// Postgres implementation of CompetitorRepo.
 package postgres
 
 import (
@@ -10,25 +10,27 @@ import (
 	"github.com/timwmillard/fishing/postgres/db"
 )
 
-// CompetitorsRepo -
+// CompetitorRepo is a repository of competitors.
 type CompetitorRepo struct {
 	query db.Querier
 }
 
-// NewCompetitorsRepo -
+// NewCompetitorsRepo returns a new competitor repository.
+// connection is a existing sql.DB connection.
 func NewCompetitorRepo(connection *sql.DB) *CompetitorRepo {
 	return &CompetitorRepo{
 		query: db.New(connection),
 	}
 }
 
+// newCompetitorRepoWithQuerier used to add a mock Querier for testing.
 func newCompetitorRepoWithQuerier(q db.Querier) *CompetitorRepo {
 	return &CompetitorRepo{
 		query: q,
 	}
 }
 
-// List -
+// List returns a list of all competitors.
 func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
 	comps, err := r.query.ListCompetitors(ctx)
 	if err != nil {
@@ -38,7 +40,7 @@ func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error)
 
 }
 
-// Get -
+// Get's a single competitor by id.
 func (r *CompetitorRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
 	comp, err := r.query.GetCompetitor(ctx, id)
 	if err != nil {
@@ -47,7 +49,7 @@ func (r *CompetitorRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competi
 	return competitor(comp), nil
 }
 
-// Create -
+// Create's a new competitor.
 func (r *CompetitorRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	comp, err := r.query.CreateCompetitor(ctx, createCompetitorParams(c))
 	if err != nil {
@@ -56,7 +58,7 @@ func (r *CompetitorRepo) Create(ctx context.Context, c fishing.Competitor) (fish
 	return competitor(comp), nil
 }
 
-// Update -
+// Update's an existing competitor.  Returns the updated competitor.
 func (r *CompetitorRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
 	comp, err := r.query.UpdateCompetitor(ctx, updateCompetitorParams(c))
 	if err != nil {
@@ -65,7 +67,7 @@ func (r *CompetitorRepo) Update(ctx context.Context, c fishing.Competitor) (fish
 	return competitor(comp), nil
 }
 
-// Delete -
+// Delete's a competitor by id.
 func (r *CompetitorRepo) Delete(ctx context.Context, id uuid.UUID) error {
 
 	numDeleted, err := r.query.DeleteCompetitor(ctx, id)
