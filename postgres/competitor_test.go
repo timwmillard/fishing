@@ -17,12 +17,8 @@ func TestCompetitorRepo_List(t *testing.T) {
 	is := is.New(t)
 	ctx := context.Background()
 
-	// want := []db.FishingCompetitor{
-	// 	{ID: uuid.New(), Firstname: "Tim", Lastname: "Millard"},
-	// 	{ID: uuid.New(), Firstname: "John", Lastname: "Doe"},
-	// }
-
-	want := mock.Competitors(2)
+	numCompetitors := 10
+	want := mock.Competitors(numCompetitors)
 
 	queries := &mock.CompetitorQueries{}
 	queries.ListCompetitorsFunc = func(ctx context.Context) ([]db.FishingCompetitor, error) { return want, nil }
@@ -33,12 +29,11 @@ func TestCompetitorRepo_List(t *testing.T) {
 	got, err := repo.List(ctx)
 	is.NoErr(err)
 	is.Equal(len(got), len(want))
-	is.Equal(got[0].ID, want[0].ID)
-	is.Equal(got[0].Firstname, want[0].Firstname)
-	is.Equal(got[0].Lastname, want[0].Lastname)
-	is.Equal(got[1].ID, want[1].ID)
-	is.Equal(got[1].Firstname, want[1].Firstname)
-	is.Equal(got[1].Lastname, want[1].Lastname)
+	for i := 0; i < numCompetitors; i++ {
+		is.Equal(got[i].ID, want[i].ID)
+		is.Equal(got[i].Firstname, want[i].Firstname)
+		is.Equal(got[i].Lastname, want[i].Lastname)
+	}
 	is.True(queries.ListCompetitorsInvoked)
 }
 
