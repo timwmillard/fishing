@@ -7,26 +7,26 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/timwmillard/fishing"
-	"github.com/timwmillard/fishing/postgres/db"
+	"github.com/timwmillard/fishing/postgres/sqlc"
 )
 
 var _ fishing.CompetitorRepo = (*CompetitorRepo)(nil)
 
 // CompetitorRepo is a repository of competitors.
 type CompetitorRepo struct {
-	query db.Querier
+	query sqlc.Querier
 }
 
 // NewCompetitorsRepo returns a new competitor repository.
-// connection is a existing sql.DB connection.
+// connection is a existing sql.sqlc connection.
 func NewCompetitorRepo(connection *sql.DB) *CompetitorRepo {
 	return &CompetitorRepo{
-		query: db.New(connection),
+		query: sqlc.New(connection),
 	}
 }
 
 // newCompetitorRepoWithQuerier used to add a mock Querier for testing.
-func newCompetitorRepoWithQuerier(q db.Querier) *CompetitorRepo {
+func newCompetitorRepoWithQuerier(q sqlc.Querier) *CompetitorRepo {
 	return &CompetitorRepo{
 		query: q,
 	}
@@ -89,23 +89,23 @@ func (r *CompetitorRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func createCompetitorParams(c fishing.Competitor) db.CreateCompetitorParams {
-	return db.CreateCompetitorParams(c)
+func createCompetitorParams(c fishing.Competitor) sqlc.CreateCompetitorParams {
+	return sqlc.CreateCompetitorParams(c)
 }
 
-func updateCompetitorParams(c fishing.Competitor) db.UpdateCompetitorParams {
-	return db.UpdateCompetitorParams(c)
+func updateCompetitorParams(c fishing.Competitor) sqlc.UpdateCompetitorParams {
+	return sqlc.UpdateCompetitorParams(c)
 }
 
-func competitors(dbComps []db.FishingCompetitor) []fishing.Competitor {
-	fishComps := make([]fishing.Competitor, 0, len(dbComps))
-	for _, c := range dbComps {
+func competitors(sqlcComps []sqlc.FishingCompetitor) []fishing.Competitor {
+	fishComps := make([]fishing.Competitor, 0, len(sqlcComps))
+	for _, c := range sqlcComps {
 		p := competitor(c)
 		fishComps = append(fishComps, p)
 	}
 	return fishComps
 }
 
-func competitor(c db.FishingCompetitor) fishing.Competitor {
+func competitor(c sqlc.FishingCompetitor) fishing.Competitor {
 	return fishing.Competitor(c)
 }

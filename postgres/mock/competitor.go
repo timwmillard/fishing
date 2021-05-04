@@ -5,26 +5,26 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/icrowley/fake"
-	"github.com/timwmillard/fishing/postgres/db"
+	"github.com/timwmillard/fishing/postgres/sqlc"
 )
 
-var _ db.Querier = (*CompetitorQueries)(nil)
+var _ sqlc.Querier = (*CompetitorQueries)(nil)
 
 type CompetitorQueries struct {
 	// List
-	ListCompetitorsFunc    func(ctx context.Context) ([]db.FishingCompetitor, error)
+	ListCompetitorsFunc    func(ctx context.Context) ([]sqlc.FishingCompetitor, error)
 	ListCompetitorsInvoked bool
 
 	// Get
-	GetCompetitorFunc    func(ctx context.Context, id uuid.UUID) (db.FishingCompetitor, error)
+	GetCompetitorFunc    func(ctx context.Context, id uuid.UUID) (sqlc.FishingCompetitor, error)
 	GetCompetitorInvoked bool
 
 	// Create
-	CreateCompetitorFunc    func(ctx context.Context, arg db.CreateCompetitorParams) (db.FishingCompetitor, error)
+	CreateCompetitorFunc    func(ctx context.Context, arg sqlc.CreateCompetitorParams) (sqlc.FishingCompetitor, error)
 	CreateCompetitorInvoked bool
 
 	// Update
-	UpdateCompetitorFunc    func(ctx context.Context, arg db.UpdateCompetitorParams) (db.FishingCompetitor, error)
+	UpdateCompetitorFunc    func(ctx context.Context, arg sqlc.UpdateCompetitorParams) (sqlc.FishingCompetitor, error)
 	UpdateCompetitorInvoked bool
 
 	// Delete
@@ -32,7 +32,7 @@ type CompetitorQueries struct {
 	DeleteCompetitorInvoked bool
 }
 
-func (q *CompetitorQueries) CreateCompetitor(ctx context.Context, arg db.CreateCompetitorParams) (db.FishingCompetitor, error) {
+func (q *CompetitorQueries) CreateCompetitor(ctx context.Context, arg sqlc.CreateCompetitorParams) (sqlc.FishingCompetitor, error) {
 	q.CreateCompetitorInvoked = true
 	return q.CreateCompetitorFunc(ctx, arg)
 
@@ -43,23 +43,23 @@ func (q *CompetitorQueries) DeleteCompetitor(ctx context.Context, id uuid.UUID) 
 	return q.DeleteCompetitorFunc(ctx, id)
 }
 
-func (q *CompetitorQueries) GetCompetitor(ctx context.Context, id uuid.UUID) (db.FishingCompetitor, error) {
+func (q *CompetitorQueries) GetCompetitor(ctx context.Context, id uuid.UUID) (sqlc.FishingCompetitor, error) {
 	q.GetCompetitorInvoked = true
 	return q.GetCompetitorFunc(ctx, id)
 }
 
-func (q *CompetitorQueries) ListCompetitors(ctx context.Context) ([]db.FishingCompetitor, error) {
+func (q *CompetitorQueries) ListCompetitors(ctx context.Context) ([]sqlc.FishingCompetitor, error) {
 	q.ListCompetitorsInvoked = true
 	return q.ListCompetitorsFunc(ctx)
 }
 
-func (q *CompetitorQueries) UpdateCompetitor(ctx context.Context, arg db.UpdateCompetitorParams) (db.FishingCompetitor, error) {
+func (q *CompetitorQueries) UpdateCompetitor(ctx context.Context, arg sqlc.UpdateCompetitorParams) (sqlc.FishingCompetitor, error) {
 	q.UpdateCompetitorInvoked = true
 	return q.UpdateCompetitorFunc(ctx, arg)
 }
 
-func Competitor() db.FishingCompetitor {
-	return db.FishingCompetitor{
+func Competitor() sqlc.FishingCompetitor {
+	return sqlc.FishingCompetitor{
 		ID:        uuid.New(),
 		Firstname: fake.FirstName(),
 		Lastname:  fake.LastName(),
@@ -72,8 +72,8 @@ func Competitor() db.FishingCompetitor {
 	}
 }
 
-func Competitors(n int) []db.FishingCompetitor {
-	comps := make([]db.FishingCompetitor, n)
+func Competitors(n int) []sqlc.FishingCompetitor {
+	comps := make([]sqlc.FishingCompetitor, n)
 	for i := 0; i < n; i++ {
 		comps[i] = Competitor()
 	}

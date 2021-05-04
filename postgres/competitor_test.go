@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/matryer/is"
 	"github.com/timwmillard/fishing"
-	"github.com/timwmillard/fishing/postgres/db"
 	"github.com/timwmillard/fishing/postgres/mock"
+	"github.com/timwmillard/fishing/postgres/sqlc"
 )
 
 func TestCompetitorRepo_List(t *testing.T) {
@@ -21,7 +21,7 @@ func TestCompetitorRepo_List(t *testing.T) {
 	want := mock.Competitors(numCompetitors)
 
 	queries := &mock.CompetitorQueries{}
-	queries.ListCompetitorsFunc = func(ctx context.Context) ([]db.FishingCompetitor, error) { return want, nil }
+	queries.ListCompetitorsFunc = func(ctx context.Context) ([]sqlc.FishingCompetitor, error) { return want, nil }
 
 	repo := newCompetitorRepoWithQuerier(queries)
 
@@ -42,7 +42,7 @@ func TestCompetitorRepo_List_error(t *testing.T) {
 	ctx := context.Background()
 
 	queries := &mock.CompetitorQueries{}
-	queries.ListCompetitorsFunc = func(ctx context.Context) ([]db.FishingCompetitor, error) { return nil, errors.New("test") }
+	queries.ListCompetitorsFunc = func(ctx context.Context) ([]sqlc.FishingCompetitor, error) { return nil, errors.New("test") }
 
 	repo := newCompetitorRepoWithQuerier(queries)
 
@@ -59,10 +59,10 @@ func TestCompetitorRepo_Get(t *testing.T) {
 	ctx := context.Background()
 
 	compID := uuid.New()
-	want := db.FishingCompetitor{ID: compID, Firstname: "Tim", Lastname: "Millard"}
+	want := sqlc.FishingCompetitor{ID: compID, Firstname: "Tim", Lastname: "Millard"}
 
 	queries := &mock.CompetitorQueries{}
-	queries.GetCompetitorFunc = func(ctx context.Context, id uuid.UUID) (db.FishingCompetitor, error) {
+	queries.GetCompetitorFunc = func(ctx context.Context, id uuid.UUID) (sqlc.FishingCompetitor, error) {
 		is.Equal(compID, id)
 		return want, nil
 	}
@@ -85,9 +85,9 @@ func TestCompetitorRepo_Get_error(t *testing.T) {
 	compID := uuid.New()
 
 	queries := &mock.CompetitorQueries{}
-	queries.GetCompetitorFunc = func(ctx context.Context, id uuid.UUID) (db.FishingCompetitor, error) {
+	queries.GetCompetitorFunc = func(ctx context.Context, id uuid.UUID) (sqlc.FishingCompetitor, error) {
 		is.Equal(compID, id)
-		return db.FishingCompetitor{}, errors.New("test")
+		return sqlc.FishingCompetitor{}, errors.New("test")
 	}
 
 	repo := newCompetitorRepoWithQuerier(queries)
@@ -107,9 +107,9 @@ func TestCompetitorRepo_Get_not_found(t *testing.T) {
 	compID := uuid.New()
 
 	queries := &mock.CompetitorQueries{}
-	queries.GetCompetitorFunc = func(ctx context.Context, id uuid.UUID) (db.FishingCompetitor, error) {
+	queries.GetCompetitorFunc = func(ctx context.Context, id uuid.UUID) (sqlc.FishingCompetitor, error) {
 		is.Equal(compID, id)
-		return db.FishingCompetitor{}, sql.ErrNoRows
+		return sqlc.FishingCompetitor{}, sql.ErrNoRows
 	}
 
 	repo := newCompetitorRepoWithQuerier(queries)
@@ -129,10 +129,10 @@ func TestCompetitorRepo_Update(t *testing.T) {
 
 	compID := uuid.New()
 	want := fishing.Competitor{ID: compID, Firstname: "Tim", Lastname: "Millard"}
-	wantDB := db.FishingCompetitor{ID: compID, Firstname: "Tim", Lastname: "Millard"}
+	wantDB := sqlc.FishingCompetitor{ID: compID, Firstname: "Tim", Lastname: "Millard"}
 
 	queries := &mock.CompetitorQueries{}
-	queries.UpdateCompetitorFunc = func(ctx context.Context, arg db.UpdateCompetitorParams) (db.FishingCompetitor, error) {
+	queries.UpdateCompetitorFunc = func(ctx context.Context, arg sqlc.UpdateCompetitorParams) (sqlc.FishingCompetitor, error) {
 		is.Equal(wantDB.ID, arg.ID)
 		is.Equal(wantDB.Firstname, arg.Firstname)
 		is.Equal(wantDB.Lastname, arg.Lastname)
@@ -157,9 +157,9 @@ func TestCompetitorRepo_Update_error(t *testing.T) {
 	compID := uuid.New()
 
 	queries := &mock.CompetitorQueries{}
-	queries.UpdateCompetitorFunc = func(ctx context.Context, arg db.UpdateCompetitorParams) (db.FishingCompetitor, error) {
+	queries.UpdateCompetitorFunc = func(ctx context.Context, arg sqlc.UpdateCompetitorParams) (sqlc.FishingCompetitor, error) {
 		is.Equal(compID, arg.ID)
-		return db.FishingCompetitor{}, errors.New("test")
+		return sqlc.FishingCompetitor{}, errors.New("test")
 	}
 
 	repo := newCompetitorRepoWithQuerier(queries)
@@ -180,9 +180,9 @@ func TestCompetitorRepo_Update_not_found(t *testing.T) {
 	compID := uuid.New()
 
 	queries := &mock.CompetitorQueries{}
-	queries.UpdateCompetitorFunc = func(ctx context.Context, arg db.UpdateCompetitorParams) (db.FishingCompetitor, error) {
+	queries.UpdateCompetitorFunc = func(ctx context.Context, arg sqlc.UpdateCompetitorParams) (sqlc.FishingCompetitor, error) {
 		is.Equal(compID, arg.ID)
-		return db.FishingCompetitor{}, sql.ErrNoRows
+		return sqlc.FishingCompetitor{}, sql.ErrNoRows
 	}
 
 	repo := newCompetitorRepoWithQuerier(queries)
@@ -202,10 +202,10 @@ func TestCompetitorRepo_Create(t *testing.T) {
 	ctx := context.Background()
 
 	want := fishing.Competitor{Firstname: "Tim", Lastname: "Millard"}
-	wantDB := db.FishingCompetitor{ID: uuid.New(), Firstname: "Tim", Lastname: "Millard"}
+	wantDB := sqlc.FishingCompetitor{ID: uuid.New(), Firstname: "Tim", Lastname: "Millard"}
 
 	queries := &mock.CompetitorQueries{}
-	queries.CreateCompetitorFunc = func(ctx context.Context, arg db.CreateCompetitorParams) (db.FishingCompetitor, error) {
+	queries.CreateCompetitorFunc = func(ctx context.Context, arg sqlc.CreateCompetitorParams) (sqlc.FishingCompetitor, error) {
 		is.Equal(wantDB.Firstname, arg.Firstname)
 		is.Equal(wantDB.Lastname, arg.Lastname)
 		return wantDB, nil
@@ -227,8 +227,8 @@ func TestCompetitorRepo_Create_error(t *testing.T) {
 	ctx := context.Background()
 
 	queries := &mock.CompetitorQueries{}
-	queries.CreateCompetitorFunc = func(ctx context.Context, arg db.CreateCompetitorParams) (db.FishingCompetitor, error) {
-		return db.FishingCompetitor{}, errors.New("test")
+	queries.CreateCompetitorFunc = func(ctx context.Context, arg sqlc.CreateCompetitorParams) (sqlc.FishingCompetitor, error) {
+		return sqlc.FishingCompetitor{}, errors.New("test")
 	}
 
 	repo := newCompetitorRepoWithQuerier(queries)
@@ -307,7 +307,7 @@ func TestCompetitorRepo_Delete_not_found(t *testing.T) {
 func TestCompetitor(t *testing.T) {
 	is := is.New(t)
 
-	comp := db.FishingCompetitor{ID: uuid.New(), Firstname: "Tim", Lastname: "Millard"}
+	comp := sqlc.FishingCompetitor{ID: uuid.New(), Firstname: "Tim", Lastname: "Millard"}
 
 	// SUT
 	fcomp := competitor(comp)
