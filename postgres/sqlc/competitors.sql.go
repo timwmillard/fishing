@@ -67,7 +67,8 @@ func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorPara
 }
 
 const deleteCompetitor = `-- name: DeleteCompetitor :execrows
-DELETE FROM fishing.competitors
+DELETE
+FROM fishing.competitors
 WHERE id = $1
 `
 
@@ -80,7 +81,8 @@ func (q *Queries) DeleteCompetitor(ctx context.Context, id uuid.UUID) (int64, er
 }
 
 const getCompetitor = `-- name: GetCompetitor :one
-SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM fishing.competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
+FROM fishing.competitors
 WHERE id = $1
 `
 
@@ -105,7 +107,8 @@ func (q *Queries) GetCompetitor(ctx context.Context, id uuid.UUID) (FishingCompe
 }
 
 const listCompetitors = `-- name: ListCompetitors :many
-SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM fishing.competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
+FROM fishing.competitors
 ORDER BY competitor_no, lastname, firstname ASC
 `
 

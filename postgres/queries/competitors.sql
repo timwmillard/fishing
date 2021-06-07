@@ -1,10 +1,12 @@
 
 -- name: ListCompetitors :many
-SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM fishing.competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
+FROM fishing.competitors
 ORDER BY competitor_no, lastname, firstname ASC;
 
 -- name: GetCompetitor :one
-SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile FROM fishing.competitors
+SELECT id, competitor_no, firstname, lastname, email, address1, address2, suburb, state, postcode, phone, mobile
+FROM fishing.competitors
 WHERE id = $1;
 
 -- name: CreateCompetitor :one
@@ -32,5 +34,6 @@ WHERE id = $1
 RETURNING *;
 
 -- name: DeleteCompetitor :execrows
-DELETE FROM fishing.competitors
+DELETE
+FROM fishing.competitors
 WHERE id = $1;
