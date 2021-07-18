@@ -16,9 +16,9 @@ type Species struct {
 
 // SpeciesRepo interface
 type SpeciesRepo interface {
-	List() ([]*Species, error)
-	Get(id uuid.UUID) (*Species, error)
-	Create(c *Species) (*Species, error)
-	Update(id uuid.UUID, c *Species) (*Species, error)
+	List() ([]Species, error)
+	Get(id uuid.UUID) (Species, error)
+	Create(c Species) (Species, error)
+	Update(id uuid.UUID, c Species) (Species, error)
 	Delete(id uuid.UUID) error
 }
