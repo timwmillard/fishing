@@ -2,7 +2,10 @@ package postgres
 
 //go:generate sqlc generate
 
-import "database/sql"
+import (
+	"database/sql"
+	"time"
+)
 
 func nullIntP(i sql.NullInt32) *int {
 	if _, err := i.Value(); err != nil {
@@ -13,11 +16,10 @@ func nullIntP(i sql.NullInt32) *int {
 }
 
 func nullInt(i sql.NullInt32) int {
-	if _, err := i.Value(); err != nil {
+	if !i.Valid {
 		return 0
 	}
-	r := int(i.Int32)
-	return r
+	return int(i.Int32)
 }
 
 func nullStringP(s sql.NullString) *string {
@@ -28,8 +30,15 @@ func nullStringP(s sql.NullString) *string {
 }
 
 func nullString(s sql.NullString) string {
-	if _, err := s.Value(); err != nil {
+	if !s.Valid {
 		return ""
 	}
 	return s.String
+}
+
+func nullTime(t sql.NullTime) time.Time {
+	if !t.Valid {
+		return time.Time{}
+	}
+	return t.Time
 }

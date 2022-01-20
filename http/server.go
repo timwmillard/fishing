@@ -7,13 +7,15 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"github.com/timwmillard/fishing/postgres"
+	"github.com/timwmillard/fishing"
 )
 
 // Server -
 type Server struct {
 	DB     *sql.DB
 	router *mux.Router
+
+	CompetitorService *fishing.CompetitorService
 
 	// Handlers
 	competitorsHandler *CompetitorHandler
@@ -23,14 +25,7 @@ type Server struct {
 func (s *Server) ListenAndServe() error {
 	var err error
 
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", "?", "?", "localhost", "5432", "fishingcomp")
-	db, err := sql.Open("postgres", connectionString)
-	if err != nil {
-		return fmt.Errorf("database connection error: %v", err)
-	}
-
-	competitorRepo := postgres.NewCompetitorRepo(db)
-	s.competitorsHandler = NewCompetitorHandler(competitorRepo)
+	s.competitorsHandler = NewCompetitorHandler(s.CompetitorService)
 
 	// Setup Routing
 	s.routes()

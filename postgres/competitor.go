@@ -25,6 +25,12 @@ func NewCompetitorRepo(connection *sql.DB) *CompetitorRepo {
 	}
 }
 
+func NewCompetitorRepoWithQueries(q sqlc.Querier) *CompetitorRepo {
+	return &CompetitorRepo{
+		query: q,
+	}
+}
+
 // newCompetitorRepoWithQuerier used to add a mock Querier for testing.
 func newCompetitorRepoWithQuerier(q sqlc.Querier) *CompetitorRepo {
 	return &CompetitorRepo{

@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"testing"
+	"time"
 )
 
 func TestNullIntP(t *testing.T) {
@@ -121,6 +122,42 @@ func TestNullString(t *testing.T) {
 		got := nullString(test.arg)
 		if got != test.expected {
 			t.Errorf("nullIntP got %v but expected %v", got, test.expected)
+		}
+	}
+}
+
+func TestNullTime(t *testing.T) {
+	tests := []struct {
+		name     string
+		arg      sql.NullTime
+		expected time.Time
+	}{
+		{
+			name:     "unix time",
+			arg:      sql.NullTime{Time: time.Unix(123456, 0), Valid: true},
+			expected: time.Unix(123456, 0),
+		},
+		{
+			name:     "standard time",
+			arg:      sql.NullTime{Time: time.Date(2021, 3, 12, 15, 16, 23, 4, time.UTC), Valid: true},
+			expected: time.Date(2021, 3, 12, 15, 16, 23, 4, time.UTC),
+		},
+		{
+			name:     "nil time",
+			arg:      sql.NullTime{Time: time.Time{}, Valid: true},
+			expected: time.Time{},
+		},
+		{
+			name:     "null time",
+			arg:      sql.NullTime{Time: time.Unix(0, 0), Valid: false},
+			expected: time.Time{},
+		},
+	}
+
+	for _, test := range tests {
+		got := nullTime(test.arg)
+		if got != test.expected {
+			t.Errorf("nullTime got %v but expected %v", got, test.expected)
 		}
 	}
 }

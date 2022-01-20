@@ -3,8 +3,14 @@ package fishing
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
+)
+
+// Common Errors
+var (
+	ErrCompetitorNotFound = errors.New("competitor not found")
 )
 
 // Competitor is a competitor in fishing competition.
@@ -32,8 +38,100 @@ type CompetitorRepo interface {
 	Update(ctx context.Context, c Competitor) (Competitor, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 }
+type CompetitorService struct {
+	repo   CompetitorRepo
+	events chan CompetitorEvent
+}
 
-// Common Errors
-var (
-	ErrCompetitorNotFound = errors.New("competitor not found")
+func NewCompetitorService(repo CompetitorRepo) *CompetitorService {
+	return &CompetitorService{
+		repo:   repo,
+		events: make(chan CompetitorEvent),
+	}
+}
+
+func (cs *CompetitorService) Events() <-chan CompetitorEvent {
+	return cs.events
+}
+
+func (cs *CompetitorService) List(ctx context.Context) ([]Competitor, error) {
+	return cs.repo.List(ctx)
+}
+
+func (cs *CompetitorService) Get(ctx context.Context, id uuid.UUID) (Competitor, error) {
+	return cs.repo.Get(ctx, id)
+}
+
+func (cs *CompetitorService) Create(ctx context.Context, c Competitor) (Competitor, error) {
+	comp, err := cs.repo.Create(ctx, c)
+	if err != nil {
+		return Competitor{}, err
+	}
+	cs.sendEvent(CompetitorEvent{
+		EventType:       CreateCompetitorEvent,
+		AfterCompetitor: comp,
+		Message:         fmt.Sprintf("Created new competitor %v", comp.ID),
+	})
+	return comp, err
+}
+
+func (cs *CompetitorService) Update(ctx context.Context, c Competitor) (Competitor, error) {
+	comp, err := cs.repo.Update(ctx, c)
+	if err != nil {
+		return Competitor{}, err
+	}
+	cs.sendEvent(CompetitorEvent{
+		EventType:        UpdateCompetitorEvent,
+		BeforeCompetitor: c,
+		AfterCompetitor:  comp,
+		Message:          fmt.Sprintf("Updated competitor %v", c.ID),
+	})
+	return comp, err
+}
+
+func (cs *CompetitorService) Delete(ctx context.Context, id uuid.UUID) error {
+	err := cs.repo.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+	cs.sendEvent(CompetitorEvent{
+		EventType: DeleteCompetitorEvent,
+		Message:   fmt.Sprintf("Deleted competitor %v", id),
+	})
+	return nil
+}
+
+// CompetitorEventType
+type CompetitorEventType int
+
+const (
+	CreateCompetitorEvent CompetitorEventType = iota
+	UpdateCompetitorEvent
+	DeleteCompetitorEvent
 )
+
+type CompetitorEvent struct {
+	EventType        CompetitorEventType
+	BeforeCompetitor Competitor
+	AfterCompetitor  Competitor
+	Message          string
+	err              chan error
+}
+
+func (e CompetitorEvent) Done() {
+	e.err <- nil
+}
+
+func (e CompetitorEvent) Error(err error) {
+	e.err <- err
+}
+
+// sendEvent sends a non blocking event onto the events channel.
+func (cs *CompetitorService) sendEvent(e CompetitorEvent) error {
+	e.err = make(chan error)
+	select {
+	case cs.events <- e:
+	default:
+	}
+	return <-e.err
+}

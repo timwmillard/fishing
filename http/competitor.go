@@ -13,19 +13,19 @@ import (
 
 // CompetitorHandler -
 type CompetitorHandler struct {
-	repo   fishing.CompetitorRepo
-	router *mux.Router
-	log    *log.Logger
+	service *fishing.CompetitorService
+	router  *mux.Router
+	log     *log.Logger
 	// errLog  *log.Logger
 	// infoLog *log.Logger
 }
 
 // NewCompetitorsHandler -
-func NewCompetitorHandler(repo fishing.CompetitorRepo) *CompetitorHandler {
+func NewCompetitorHandler(service *fishing.CompetitorService) *CompetitorHandler {
 	return &CompetitorHandler{
-		repo:   repo,
-		router: mux.NewRouter(),
-		log:    log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile),
+		service: service,
+		router:  mux.NewRouter(),
+		log:     log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile),
 	}
 }
 
@@ -36,14 +36,16 @@ func (c *CompetitorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // List -
 func (c *CompetitorHandler) List(w http.ResponseWriter, r *http.Request) {
-	competitors, err := c.repo.List(r.Context())
+	competitors, err := c.service.List(r.Context())
 	if err != nil {
 		c.log.Printf("List Competitors: %v", err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	encoder := json.NewEncoder(w)
-	encoder.Encode(competitors)
+	err = json.NewEncoder(w).Encode(competitors)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 // Get -
@@ -54,14 +56,16 @@ func (c *CompetitorHandler) Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	competitor, err := c.repo.Get(r.Context(), id)
+	competitor, err := c.service.Get(r.Context(), id)
 	if err != nil {
 		c.log.Printf("Get Competitor: %v", err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	encoder := json.NewEncoder(w)
-	encoder.Encode(competitor)
+	err = json.NewEncoder(w).Encode(competitor)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 // Create -
@@ -74,14 +78,16 @@ func (c *CompetitorHandler) Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	newCompetitor, err := c.repo.Create(r.Context(), requestCompetitor)
+	newCompetitor, err := c.service.Create(r.Context(), requestCompetitor)
 	if err != nil {
 		c.log.Printf("Create Competitor: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	encoder := json.NewEncoder(w)
-	encoder.Encode(newCompetitor)
+	err = json.NewEncoder(w).Encode(newCompetitor)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 // Update -
@@ -106,14 +112,16 @@ func (c *CompetitorHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedCompetitor, err := c.repo.Update(r.Context(), requestCompetitor)
+	updatedCompetitor, err := c.service.Update(r.Context(), requestCompetitor)
 	if err != nil {
 		c.log.Printf("Update Competitor: %v", err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	encoder := json.NewEncoder(w)
-	encoder.Encode(updatedCompetitor)
+	err = json.NewEncoder(w).Encode(updatedCompetitor)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 // Delete -
@@ -125,12 +133,11 @@ func (c *CompetitorHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.repo.Delete(r.Context(), id)
+	err = c.service.Delete(r.Context(), id)
 	if err != nil {
 		c.log.Printf("Delete Competitor: %v", err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-
 }

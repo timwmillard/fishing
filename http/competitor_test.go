@@ -12,6 +12,9 @@ import (
 	"github.com/matryer/is"
 	"github.com/timwmillard/fishing"
 	"github.com/timwmillard/fishing/mock"
+	"github.com/timwmillard/fishing/postgres"
+	pmock "github.com/timwmillard/fishing/postgres/mock"
+	"github.com/timwmillard/fishing/postgres/sqlc"
 )
 
 func TestCompetitorsHandler_List(t *testing.T) {
@@ -90,4 +93,35 @@ func TestCompetitorsHandler_List_error(t *testing.T) {
 
 	is.Equal(http.StatusNotFound, w.Code)
 	is.True(mockRepo.ListInvoked)
+}
+
+func TestCompetitorsHandler_List_sqlc(t *testing.T) {
+	is := is.New(t)
+
+	want := pmock.Competitors(1)
+
+	mockQueries := &pmock.CompetitorQueries{}
+	mockQueries.ListCompetitorsFunc = func(ctx context.Context) ([]sqlc.FishingCompetitor, error) {
+		return want, nil
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/competitors/", nil)
+	w := httptest.NewRecorder()
+
+	compRepo := postgres.NewCompetitorRepoWithQueries(mockQueries)
+	compHandler := NewCompetitorHandler(compRepo)
+
+	// SUT
+	compHandler.List(w, req)
+
+	is.Equal(http.StatusOK, w.Code)
+	is.True(mockQueries.ListCompetitorsInvoked)
+
+	got := make([]fishing.Competitor, 1)
+	json.Unmarshal(w.Body.Bytes(), &got)
+
+	is.Equal(got[0].ID, want[0].ID)
+	is.Equal(got[0].Firstname, want[0].Firstname)
+	is.Equal(got[0].Lastname, want[0].Lastname)
+	is.Equal(got[0].Email, want[0].Email)
 }
