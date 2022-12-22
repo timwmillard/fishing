@@ -3,6 +3,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/timwmillard/fishing"
 )
@@ -93,7 +94,7 @@ RETURNING id, competitor_no, first_name, last_name, email, address1, address2, s
 `
 
 // Create's a new competitor.
-func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CompetitorParams) (fishing.Competitor, error) {
+func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CreateCompetitorParams) (fishing.Competitor, error) {
 	row := r.DB.QueryRowContext(ctx, createCompetitor,
 		arg.CompetitorNo,
 		arg.FirstName,
@@ -125,22 +126,115 @@ func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CompetitorParam
 
 const updateCompetitor = `-- name: UpdateCompetitor :one
 UPDATE fishing.competitor
-SET competitor_no = $2,
-    first_name = $3,
-    last_name = $4,
-    email = $5, 
-    address1 = $6,
-    address2 = $7,
-    suburb = $8,
-    state = $9,
-    postcode = $10,
-    mobile = $11
+SET competitor_no = COALESCE($2, competitor_no),
+    first_name = COALESCE($3, first_name),
+    last_name = COALESCE($4, last_name),
+    email = COALESCE($5, email),
+    address1 = COALESCE($6, address1),
+    address2 = COALESCE($7, address2),
+    suburb = COALESCE($8, suburb),
+    state = COALESCE($9, state),
+    postcode = COALESCE($10, postcode),
+    mobile = COALESCE($11, mobile)
 WHERE id = $1
 RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
 `
 
+type updateCompetitorParams struct {
+	CompetitorNo sql.NullString
+	FirstName    sql.NullString
+	LastName     sql.NullString
+	Email        sql.NullString
+	Address1     sql.NullString
+	Address2     sql.NullString
+	Suburb       sql.NullString
+	State        sql.NullString
+	Postcode     sql.NullString
+	Mobile       sql.NullString
+}
+
+func newUpdateCompetitorParams(param fishing.UpdateCompetitorParams) updateCompetitorParams {
+	return updateCompetitorParams{
+		CompetitorNo: toNullString(param.CompetitorNo),
+		FirstName:    toNullString(param.FirstName),
+		LastName:     toNullString(param.LastName),
+		Email:        toNullString(param.Email),
+		Address1:     toNullString(param.Address1),
+		Address2:     toNullString(param.Address2),
+		Suburb:       toNullString(param.Suburb),
+		State:        toNullString(param.State),
+		Postcode:     toNullString(param.Postcode),
+		Mobile:       toNullString(param.Mobile),
+	}
+}
+
 // Update's an existing competitor.  Returns the updated competitor.
-func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fishing.CompetitorParams) (fishing.Competitor, error) {
+func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fishing.CreateCompetitorParams) (fishing.Competitor, error) {
+	row := r.DB.QueryRowContext(ctx, updateCompetitor,
+		id,
+		arg.CompetitorNo,
+		arg.FirstName,
+		arg.LastName,
+		arg.Email,
+		arg.Address1,
+		arg.Address2,
+		arg.Suburb,
+		arg.State,
+		arg.Postcode,
+		arg.Mobile,
+	)
+	var i fishing.Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitorNo,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Mobile,
+	)
+	return i, err
+}
+
+// Update's an existing competitor.  Returns the updated competitor.
+func (r *CompetitorRepo) UpdatePartial(ctx context.Context, id fishing.HashID, params fishing.UpdateCompetitorParams) (fishing.Competitor, error) {
+	arg := newUpdateCompetitorParams(params)
+	row := r.DB.QueryRowContext(ctx, updateCompetitor,
+		id,
+		arg.CompetitorNo,
+		arg.FirstName,
+		arg.LastName,
+		arg.Email,
+		arg.Address1,
+		arg.Address2,
+		arg.Suburb,
+		arg.State,
+		arg.Postcode,
+		arg.Mobile,
+	)
+	var i fishing.Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitorNo,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Mobile,
+	)
+	return i, err
+}
+
+// Update's an existing competitor.  Returns the updated competitor.
+func (r *CompetitorRepo) update(ctx context.Context, id fishing.HashID, arg updateCompetitorParams) (fishing.Competitor, error) {
 	row := r.DB.QueryRowContext(ctx, updateCompetitor,
 		id,
 		arg.CompetitorNo,

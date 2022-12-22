@@ -19,16 +19,16 @@ RETURNING *;
 
 -- name: UpdateCompetitor :one
 UPDATE fishing.competitor
-SET competitor_no = $2,
-    first_name = $3,
-    last_name = $4,
-    email = $5, 
-    address1 = $6,
-    address2 = $7,
-    suburb = $8,
-    state = $9,
-    postcode = $10,
-    mobile = $11
+SET competitor_no = COALESCE($2, competitor_no),
+    first_name = COALESCE($3, first_name),
+    last_name = COALESCE($4, last_name),
+    email = COALESCE($5, email),
+    address1 = COALESCE($6, address1),
+    address2 = COALESCE($7, address2),
+    suburb = COALESCE($8, suburb),
+    state = COALESCE($9, state),
+    postcode = COALESCE($10, postcode),
+    mobile = COALESCE($11, mobile)
 WHERE id = $1
 RETURNING *;
 

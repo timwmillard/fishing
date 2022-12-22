@@ -19,7 +19,7 @@ var _ fishing.CompetitorRepo = &CompetitorRepo{}
 //
 //		// make and configure a mocked fishing.CompetitorRepo
 //		mockedCompetitorRepo := &CompetitorRepo{
-//			CreateFunc: func(ctx context.Context, c fishing.CompetitorParams) (fishing.Competitor, error) {
+//			CreateFunc: func(ctx context.Context, c fishing.CreateCompetitorParams) (fishing.Competitor, error) {
 //				panic("mock out the Create method")
 //			},
 //			DeleteFunc: func(ctx context.Context, id fishing.HashID) error {
@@ -31,8 +31,11 @@ var _ fishing.CompetitorRepo = &CompetitorRepo{}
 //			ListFunc: func(ctx context.Context) ([]fishing.Competitor, error) {
 //				panic("mock out the List method")
 //			},
-//			UpdateFunc: func(ctx context.Context, id fishing.HashID, c fishing.CompetitorParams) (fishing.Competitor, error) {
+//			UpdateFunc: func(ctx context.Context, id fishing.HashID, c fishing.CreateCompetitorParams) (fishing.Competitor, error) {
 //				panic("mock out the Update method")
+//			},
+//			UpdatePartialFunc: func(ctx context.Context, id fishing.HashID, c fishing.UpdateCompetitorParams) (fishing.Competitor, error) {
+//				panic("mock out the UpdatePartial method")
 //			},
 //		}
 //
@@ -42,7 +45,7 @@ var _ fishing.CompetitorRepo = &CompetitorRepo{}
 //	}
 type CompetitorRepo struct {
 	// CreateFunc mocks the Create method.
-	CreateFunc func(ctx context.Context, c fishing.CompetitorParams) (fishing.Competitor, error)
+	CreateFunc func(ctx context.Context, c fishing.CreateCompetitorParams) (fishing.Competitor, error)
 
 	// DeleteFunc mocks the Delete method.
 	DeleteFunc func(ctx context.Context, id fishing.HashID) error
@@ -54,7 +57,10 @@ type CompetitorRepo struct {
 	ListFunc func(ctx context.Context) ([]fishing.Competitor, error)
 
 	// UpdateFunc mocks the Update method.
-	UpdateFunc func(ctx context.Context, id fishing.HashID, c fishing.CompetitorParams) (fishing.Competitor, error)
+	UpdateFunc func(ctx context.Context, id fishing.HashID, c fishing.CreateCompetitorParams) (fishing.Competitor, error)
+
+	// UpdatePartialFunc mocks the UpdatePartial method.
+	UpdatePartialFunc func(ctx context.Context, id fishing.HashID, c fishing.UpdateCompetitorParams) (fishing.Competitor, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -63,7 +69,7 @@ type CompetitorRepo struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// C is the c argument value.
-			C fishing.CompetitorParams
+			C fishing.CreateCompetitorParams
 		}
 		// Delete holds details about calls to the Delete method.
 		Delete []struct {
@@ -91,21 +97,31 @@ type CompetitorRepo struct {
 			// ID is the id argument value.
 			ID fishing.HashID
 			// C is the c argument value.
-			C fishing.CompetitorParams
+			C fishing.CreateCompetitorParams
+		}
+		// UpdatePartial holds details about calls to the UpdatePartial method.
+		UpdatePartial []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID fishing.HashID
+			// C is the c argument value.
+			C fishing.UpdateCompetitorParams
 		}
 	}
-	lockCreate sync.RWMutex
-	lockDelete sync.RWMutex
-	lockGet    sync.RWMutex
-	lockList   sync.RWMutex
-	lockUpdate sync.RWMutex
+	lockCreate        sync.RWMutex
+	lockDelete        sync.RWMutex
+	lockGet           sync.RWMutex
+	lockList          sync.RWMutex
+	lockUpdate        sync.RWMutex
+	lockUpdatePartial sync.RWMutex
 }
 
 // Create calls CreateFunc.
-func (mock *CompetitorRepo) Create(ctx context.Context, c fishing.CompetitorParams) (fishing.Competitor, error) {
+func (mock *CompetitorRepo) Create(ctx context.Context, c fishing.CreateCompetitorParams) (fishing.Competitor, error) {
 	callInfo := struct {
 		Ctx context.Context
-		C   fishing.CompetitorParams
+		C   fishing.CreateCompetitorParams
 	}{
 		Ctx: ctx,
 		C:   c,
@@ -129,11 +145,11 @@ func (mock *CompetitorRepo) Create(ctx context.Context, c fishing.CompetitorPara
 //	len(mockedCompetitorRepo.CreateCalls())
 func (mock *CompetitorRepo) CreateCalls() []struct {
 	Ctx context.Context
-	C   fishing.CompetitorParams
+	C   fishing.CreateCompetitorParams
 } {
 	var calls []struct {
 		Ctx context.Context
-		C   fishing.CompetitorParams
+		C   fishing.CreateCompetitorParams
 	}
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
@@ -257,11 +273,11 @@ func (mock *CompetitorRepo) ListCalls() []struct {
 }
 
 // Update calls UpdateFunc.
-func (mock *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, c fishing.CompetitorParams) (fishing.Competitor, error) {
+func (mock *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, c fishing.CreateCompetitorParams) (fishing.Competitor, error) {
 	callInfo := struct {
 		Ctx context.Context
 		ID  fishing.HashID
-		C   fishing.CompetitorParams
+		C   fishing.CreateCompetitorParams
 	}{
 		Ctx: ctx,
 		ID:  id,
@@ -287,15 +303,59 @@ func (mock *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, c fis
 func (mock *CompetitorRepo) UpdateCalls() []struct {
 	Ctx context.Context
 	ID  fishing.HashID
-	C   fishing.CompetitorParams
+	C   fishing.CreateCompetitorParams
 } {
 	var calls []struct {
 		Ctx context.Context
 		ID  fishing.HashID
-		C   fishing.CompetitorParams
+		C   fishing.CreateCompetitorParams
 	}
 	mock.lockUpdate.RLock()
 	calls = mock.calls.Update
 	mock.lockUpdate.RUnlock()
+	return calls
+}
+
+// UpdatePartial calls UpdatePartialFunc.
+func (mock *CompetitorRepo) UpdatePartial(ctx context.Context, id fishing.HashID, c fishing.UpdateCompetitorParams) (fishing.Competitor, error) {
+	callInfo := struct {
+		Ctx context.Context
+		ID  fishing.HashID
+		C   fishing.UpdateCompetitorParams
+	}{
+		Ctx: ctx,
+		ID:  id,
+		C:   c,
+	}
+	mock.lockUpdatePartial.Lock()
+	mock.calls.UpdatePartial = append(mock.calls.UpdatePartial, callInfo)
+	mock.lockUpdatePartial.Unlock()
+	if mock.UpdatePartialFunc == nil {
+		var (
+			competitorOut fishing.Competitor
+			errOut        error
+		)
+		return competitorOut, errOut
+	}
+	return mock.UpdatePartialFunc(ctx, id, c)
+}
+
+// UpdatePartialCalls gets all the calls that were made to UpdatePartial.
+// Check the length with:
+//
+//	len(mockedCompetitorRepo.UpdatePartialCalls())
+func (mock *CompetitorRepo) UpdatePartialCalls() []struct {
+	Ctx context.Context
+	ID  fishing.HashID
+	C   fishing.UpdateCompetitorParams
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  fishing.HashID
+		C   fishing.UpdateCompetitorParams
+	}
+	mock.lockUpdatePartial.RLock()
+	calls = mock.calls.UpdatePartial
+	mock.lockUpdatePartial.RUnlock()
 	return calls
 }

@@ -13,3 +13,13 @@ type DBTX interface {
 	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
 	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
 }
+
+func toNullString(str *string) sql.NullString {
+	if str == nil {
+		return sql.NullString{}
+	}
+	return sql.NullString{
+		String: *str,
+		Valid:  true,
+	}
+}
