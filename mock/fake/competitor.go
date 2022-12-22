@@ -3,22 +3,22 @@ package fake
 import (
 	"strconv"
 
-	ifake "github.com/icrowley/fake"
+	"github.com/icrowley/fake"
 	"github.com/timwmillard/fishing"
 )
 
 func Competitor() fishing.Competitor {
-	id, _ := strconv.Atoi(ifake.Digits())
+	id, _ := strconv.Atoi(fake.Digits())
 	return fishing.Competitor{
 		ID:        fishing.NewHashID(id),
-		FirstName: ifake.FirstName(),
-		LastName:  ifake.LastName(),
-		Email:     ifake.EmailAddress(),
-		Address1:  ifake.StreetAddress(),
-		Suburb:    ifake.City(),
-		Postcode:  ifake.DigitsN(4),
-		Phone:     ifake.Phone(),
-		Mobile:    ifake.Phone(),
+		FirstName: fake.FirstName(),
+		LastName:  fake.LastName(),
+		Email:     fake.EmailAddress(),
+		Address1:  fake.StreetAddress(),
+		Suburb:    fake.City(),
+		Postcode:  fake.DigitsN(4),
+		Phone:     fake.Phone(),
+		Mobile:    fake.Phone(),
 	}
 }
 
