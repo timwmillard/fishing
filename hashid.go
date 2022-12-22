@@ -4,15 +4,16 @@ import (
 	"github.com/speps/go-hashids/v2"
 )
 
-var HashSalt = "this is my secret"
+const (
+	hashMinLength = 10
+	hashAlphabet  = "abcdefghijklmnopqrstuvwxyz1234567890"
+	hashSalt      = "this is my secret"
+)
 
 type HashID string
 
 func NewHashID(id int) HashID {
-	data := hashids.NewData()
-	data.Salt = HashSalt
-	data.MinLength = 10
-	hash, err := hashids.NewWithData(data)
+	hash, err := hashids.NewWithData(hashData())
 	if err != nil {
 		panic(err)
 	}
@@ -25,10 +26,7 @@ func NewHashID(id int) HashID {
 }
 
 func (h HashID) ID() int {
-	data := hashids.NewData()
-	data.Salt = HashSalt
-	data.MinLength = 10
-	hash, err := hashids.NewWithData(data)
+	hash, err := hashids.NewWithData(hashData())
 	if err != nil {
 		panic(err)
 	}
@@ -37,4 +35,12 @@ func (h HashID) ID() int {
 		return 0
 	}
 	return str[0]
+}
+
+func hashData() *hashids.HashIDData {
+	return &hashids.HashIDData{
+		Alphabet:  hashAlphabet,
+		MinLength: hashMinLength,
+		Salt:      hashSalt,
+	}
 }
