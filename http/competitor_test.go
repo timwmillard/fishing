@@ -6,18 +6,19 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/matryer/is"
 	"github.com/timwmillard/fishing"
 	"github.com/timwmillard/fishing/mock"
+	"github.com/timwmillard/fishing/mock/fake"
 )
 
 func TestCompetitorsHandler_List(t *testing.T) {
 	is := is.New(t)
 
-	want := mock.Competitors(2)
+	want := fake.Competitors(2)
 
 	mockRepo := &mock.CompetitorRepo{}
 	mockRepo.ListFunc = func(ctx context.Context) ([]fishing.Competitor, error) {
@@ -33,15 +34,13 @@ func TestCompetitorsHandler_List(t *testing.T) {
 	compHandler.List(w, req)
 
 	is.Equal(http.StatusOK, w.Code)
-	is.True(mockRepo.ListInvoked)
+	is.True(len(mockRepo.ListCalls()) > 0)
 
 	got := make([]fishing.Competitor, 2)
 	json.Unmarshal(w.Body.Bytes(), &got)
 
-	if !reflect.DeepEqual(got, want) {
-		t.Logf("got %v\n", got)
-		t.Logf("want %v\n", want)
-		t.Errorf("deep equal failed")
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("List() mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -62,7 +61,7 @@ func TestCompetitorsHandler_List_empty(t *testing.T) {
 	compHandler.List(w, req)
 
 	is.Equal(http.StatusOK, w.Code)
-	is.True(mockRepo.ListInvoked)
+	is.True(len(mockRepo.ListCalls()) > 0)
 
 	got := make([]fishing.Competitor, 0)
 	json.Unmarshal(w.Body.Bytes(), &got)
@@ -89,5 +88,5 @@ func TestCompetitorsHandler_List_error(t *testing.T) {
 	compHandler.List(w, req)
 
 	is.Equal(http.StatusNotFound, w.Code)
-	is.True(mockRepo.ListInvoked)
+	is.True(len(mockRepo.ListCalls()) > 0)
 }

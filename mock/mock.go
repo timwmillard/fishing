@@ -1,3 +1,3 @@
 package mock
 
-// go:generate moq -out competitor.go -pkg mock -stub ../ CompetitorRepo
+// go:generate moq -out competitor.go -pkg mock -stub ../ CompetitorRepo:CompetitorRepo

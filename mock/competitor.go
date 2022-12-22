@@ -9,16 +9,16 @@ import (
 	"sync"
 )
 
-// Ensure, that CompetitorRepoMock does implement fishing.CompetitorRepo.
+// Ensure, that CompetitorRepo does implement fishing.CompetitorRepo.
 // If this is not the case, regenerate this file with moq.
-var _ fishing.CompetitorRepo = &CompetitorRepoMock{}
+var _ fishing.CompetitorRepo = &CompetitorRepo{}
 
-// CompetitorRepoMock is a mock implementation of fishing.CompetitorRepo.
+// CompetitorRepo is a mock implementation of fishing.CompetitorRepo.
 //
 //	func TestSomethingThatUsesCompetitorRepo(t *testing.T) {
 //
 //		// make and configure a mocked fishing.CompetitorRepo
-//		mockedCompetitorRepo := &CompetitorRepoMock{
+//		mockedCompetitorRepo := &CompetitorRepo{
 //			CreateFunc: func(ctx context.Context, c fishing.CompetitorParams) (fishing.Competitor, error) {
 //				panic("mock out the Create method")
 //			},
@@ -40,7 +40,7 @@ var _ fishing.CompetitorRepo = &CompetitorRepoMock{}
 //		// and then make assertions.
 //
 //	}
-type CompetitorRepoMock struct {
+type CompetitorRepo struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, c fishing.CompetitorParams) (fishing.Competitor, error)
 
@@ -102,10 +102,7 @@ type CompetitorRepoMock struct {
 }
 
 // Create calls CreateFunc.
-func (mock *CompetitorRepoMock) Create(ctx context.Context, c fishing.CompetitorParams) (fishing.Competitor, error) {
-	if mock.CreateFunc == nil {
-		panic("CompetitorRepoMock.CreateFunc: method is nil but CompetitorRepo.Create was just called")
-	}
+func (mock *CompetitorRepo) Create(ctx context.Context, c fishing.CompetitorParams) (fishing.Competitor, error) {
 	callInfo := struct {
 		Ctx context.Context
 		C   fishing.CompetitorParams
@@ -116,6 +113,13 @@ func (mock *CompetitorRepoMock) Create(ctx context.Context, c fishing.Competitor
 	mock.lockCreate.Lock()
 	mock.calls.Create = append(mock.calls.Create, callInfo)
 	mock.lockCreate.Unlock()
+	if mock.CreateFunc == nil {
+		var (
+			competitorOut fishing.Competitor
+			errOut        error
+		)
+		return competitorOut, errOut
+	}
 	return mock.CreateFunc(ctx, c)
 }
 
@@ -123,7 +127,7 @@ func (mock *CompetitorRepoMock) Create(ctx context.Context, c fishing.Competitor
 // Check the length with:
 //
 //	len(mockedCompetitorRepo.CreateCalls())
-func (mock *CompetitorRepoMock) CreateCalls() []struct {
+func (mock *CompetitorRepo) CreateCalls() []struct {
 	Ctx context.Context
 	C   fishing.CompetitorParams
 } {
@@ -138,10 +142,7 @@ func (mock *CompetitorRepoMock) CreateCalls() []struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *CompetitorRepoMock) Delete(ctx context.Context, id fishing.HashID) error {
-	if mock.DeleteFunc == nil {
-		panic("CompetitorRepoMock.DeleteFunc: method is nil but CompetitorRepo.Delete was just called")
-	}
+func (mock *CompetitorRepo) Delete(ctx context.Context, id fishing.HashID) error {
 	callInfo := struct {
 		Ctx context.Context
 		ID  fishing.HashID
@@ -152,6 +153,12 @@ func (mock *CompetitorRepoMock) Delete(ctx context.Context, id fishing.HashID) e
 	mock.lockDelete.Lock()
 	mock.calls.Delete = append(mock.calls.Delete, callInfo)
 	mock.lockDelete.Unlock()
+	if mock.DeleteFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
 	return mock.DeleteFunc(ctx, id)
 }
 
@@ -159,7 +166,7 @@ func (mock *CompetitorRepoMock) Delete(ctx context.Context, id fishing.HashID) e
 // Check the length with:
 //
 //	len(mockedCompetitorRepo.DeleteCalls())
-func (mock *CompetitorRepoMock) DeleteCalls() []struct {
+func (mock *CompetitorRepo) DeleteCalls() []struct {
 	Ctx context.Context
 	ID  fishing.HashID
 } {
@@ -174,10 +181,7 @@ func (mock *CompetitorRepoMock) DeleteCalls() []struct {
 }
 
 // Get calls GetFunc.
-func (mock *CompetitorRepoMock) Get(ctx context.Context, id fishing.HashID) (fishing.Competitor, error) {
-	if mock.GetFunc == nil {
-		panic("CompetitorRepoMock.GetFunc: method is nil but CompetitorRepo.Get was just called")
-	}
+func (mock *CompetitorRepo) Get(ctx context.Context, id fishing.HashID) (fishing.Competitor, error) {
 	callInfo := struct {
 		Ctx context.Context
 		ID  fishing.HashID
@@ -188,6 +192,13 @@ func (mock *CompetitorRepoMock) Get(ctx context.Context, id fishing.HashID) (fis
 	mock.lockGet.Lock()
 	mock.calls.Get = append(mock.calls.Get, callInfo)
 	mock.lockGet.Unlock()
+	if mock.GetFunc == nil {
+		var (
+			competitorOut fishing.Competitor
+			errOut        error
+		)
+		return competitorOut, errOut
+	}
 	return mock.GetFunc(ctx, id)
 }
 
@@ -195,7 +206,7 @@ func (mock *CompetitorRepoMock) Get(ctx context.Context, id fishing.HashID) (fis
 // Check the length with:
 //
 //	len(mockedCompetitorRepo.GetCalls())
-func (mock *CompetitorRepoMock) GetCalls() []struct {
+func (mock *CompetitorRepo) GetCalls() []struct {
 	Ctx context.Context
 	ID  fishing.HashID
 } {
@@ -210,10 +221,7 @@ func (mock *CompetitorRepoMock) GetCalls() []struct {
 }
 
 // List calls ListFunc.
-func (mock *CompetitorRepoMock) List(ctx context.Context) ([]fishing.Competitor, error) {
-	if mock.ListFunc == nil {
-		panic("CompetitorRepoMock.ListFunc: method is nil but CompetitorRepo.List was just called")
-	}
+func (mock *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
 	callInfo := struct {
 		Ctx context.Context
 	}{
@@ -222,6 +230,13 @@ func (mock *CompetitorRepoMock) List(ctx context.Context) ([]fishing.Competitor,
 	mock.lockList.Lock()
 	mock.calls.List = append(mock.calls.List, callInfo)
 	mock.lockList.Unlock()
+	if mock.ListFunc == nil {
+		var (
+			competitorsOut []fishing.Competitor
+			errOut         error
+		)
+		return competitorsOut, errOut
+	}
 	return mock.ListFunc(ctx)
 }
 
@@ -229,7 +244,7 @@ func (mock *CompetitorRepoMock) List(ctx context.Context) ([]fishing.Competitor,
 // Check the length with:
 //
 //	len(mockedCompetitorRepo.ListCalls())
-func (mock *CompetitorRepoMock) ListCalls() []struct {
+func (mock *CompetitorRepo) ListCalls() []struct {
 	Ctx context.Context
 } {
 	var calls []struct {
@@ -242,10 +257,7 @@ func (mock *CompetitorRepoMock) ListCalls() []struct {
 }
 
 // Update calls UpdateFunc.
-func (mock *CompetitorRepoMock) Update(ctx context.Context, id fishing.HashID, c fishing.CompetitorParams) (fishing.Competitor, error) {
-	if mock.UpdateFunc == nil {
-		panic("CompetitorRepoMock.UpdateFunc: method is nil but CompetitorRepo.Update was just called")
-	}
+func (mock *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, c fishing.CompetitorParams) (fishing.Competitor, error) {
 	callInfo := struct {
 		Ctx context.Context
 		ID  fishing.HashID
@@ -258,6 +270,13 @@ func (mock *CompetitorRepoMock) Update(ctx context.Context, id fishing.HashID, c
 	mock.lockUpdate.Lock()
 	mock.calls.Update = append(mock.calls.Update, callInfo)
 	mock.lockUpdate.Unlock()
+	if mock.UpdateFunc == nil {
+		var (
+			competitorOut fishing.Competitor
+			errOut        error
+		)
+		return competitorOut, errOut
+	}
 	return mock.UpdateFunc(ctx, id, c)
 }
 
@@ -265,7 +284,7 @@ func (mock *CompetitorRepoMock) Update(ctx context.Context, id fishing.HashID, c
 // Check the length with:
 //
 //	len(mockedCompetitorRepo.UpdateCalls())
-func (mock *CompetitorRepoMock) UpdateCalls() []struct {
+func (mock *CompetitorRepo) UpdateCalls() []struct {
 	Ctx context.Context
 	ID  fishing.HashID
 	C   fishing.CompetitorParams

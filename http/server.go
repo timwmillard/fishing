@@ -29,7 +29,7 @@ func (s *Server) ListenAndServe() error {
 		return fmt.Errorf("database connection error: %v", err)
 	}
 
-	competitorRepo := postgres.NewCompetitorRepo(db)
+	competitorRepo := &postgres.CompetitorRepo{DB: db}
 	s.competitorsHandler = NewCompetitorHandler(competitorRepo)
 
 	// Setup Routing

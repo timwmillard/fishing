@@ -11,7 +11,7 @@ var _ fishing.CompetitorRepo = (*CompetitorRepo)(nil)
 
 // CompetitorRepo is a repository of competitors.
 type CompetitorRepo struct {
-	db DBTX
+	DB DBTX
 }
 
 const listCompetitors = `-- name: ListCompetitors :many
@@ -22,7 +22,7 @@ ORDER BY competitor_no, last_name, first_name ASC
 
 // List returns a list of all competitors.
 func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
-	rows, err := r.db.QueryContext(ctx, listCompetitors)
+	rows, err := r.DB.QueryContext(ctx, listCompetitors)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ WHERE id = $1
 
 // Get's a single competitor by id.
 func (r *CompetitorRepo) Get(ctx context.Context, id fishing.HashID) (fishing.Competitor, error) {
-	row := r.db.QueryRowContext(ctx, getCompetitor, id)
+	row := r.DB.QueryRowContext(ctx, getCompetitor, id)
 	var i fishing.Competitor
 	err := row.Scan(
 		&i.ID,
@@ -95,7 +95,7 @@ RETURNING id, competitor_no, first_name, last_name, email, address1, address2, s
 
 // Create's a new competitor.
 func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CompetitorParams) (fishing.Competitor, error) {
-	row := r.db.QueryRowContext(ctx, createCompetitor,
+	row := r.DB.QueryRowContext(ctx, createCompetitor,
 		arg.CompetitorNo,
 		arg.FirstName,
 		arg.LastName,
@@ -145,7 +145,7 @@ RETURNING id, competitor_no, first_name, last_name, email, address1, address2, s
 
 // Update's an existing competitor.  Returns the updated competitor.
 func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fishing.CompetitorParams) (fishing.Competitor, error) {
-	row := r.db.QueryRowContext(ctx, updateCompetitor,
+	row := r.DB.QueryRowContext(ctx, updateCompetitor,
 		id,
 		arg.CompetitorNo,
 		arg.FirstName,
@@ -185,7 +185,7 @@ WHERE id = $1
 
 // Delete's a competitor by id.
 func (r *CompetitorRepo) Delete(ctx context.Context, id fishing.HashID) error {
-	_, err := r.db.ExecContext(ctx, deleteCompetitor, id)
+	_, err := r.DB.ExecContext(ctx, deleteCompetitor, id)
 	if err != nil {
 		return err
 	}
