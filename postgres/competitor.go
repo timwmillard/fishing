@@ -16,7 +16,7 @@ type CompetitorRepo struct {
 
 const listCompetitors = `-- name: ListCompetitors :many
 SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
-FROM fishing.competitors
+FROM fishing.competitor
 ORDER BY competitor_no, last_name, first_name ASC
 `
 
@@ -59,7 +59,7 @@ func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error)
 
 const getCompetitor = `-- name: GetCompetitor :one
 SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
-FROM fishing.competitors
+FROM fishing.competitor
 WHERE id = $1
 `
 
@@ -85,7 +85,7 @@ func (r *CompetitorRepo) Get(ctx context.Context, id fishing.HashID) (fishing.Co
 }
 
 const createCompetitor = `-- name: CreateCompetitor :one
-INSERT INTO fishing.competitors (
+INSERT INTO fishing.competitor (
 	competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
 ) VALUES (
 	$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
@@ -127,7 +127,7 @@ func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CompetitorParam
 }
 
 const updateCompetitor = `-- name: UpdateCompetitor :one
-UPDATE fishing.competitors
+UPDATE fishing.competitor
 SET competitor_no = $2,
     first_name = $3,
     last_name = $4,
@@ -179,7 +179,7 @@ func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fish
 
 const deleteCompetitor = `-- name: DeleteCompetitor :execrows
 DELETE
-FROM fishing.competitors
+FROM fishing.competitor
 WHERE id = $1
 `
 

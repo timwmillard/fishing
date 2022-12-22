@@ -5,6 +5,8 @@ import (
 	"database/sql"
 )
 
+//go:generate sqlc generate -f sqlc/sqlc.yaml
+
 type DBTX interface {
 	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
 	PrepareContext(context.Context, string) (*sql.Stmt, error)
