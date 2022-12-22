@@ -34,7 +34,6 @@ CREATE SCHEMA IF NOT EXISTS fishing;
 
 CREATE TABLE IF NOT EXISTS fishing.competitor  (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  -- event_id uuid NOT NULL,
   competitor_no text NOT NULL DEFAULT '',
   first_name text NOT NULL DEFAULT '',
   last_name text NOT NULL DEFAULT '',
@@ -45,6 +44,7 @@ CREATE TABLE IF NOT EXISTS fishing.competitor  (
   state text NOT NULL DEFAULT '',
   postcode text NOT NULL DEFAULT '',
   mobile text NOT NULL DEFAULT ''
+  -- event_id uuid NOT NULL,
   -- team_id int,
   -- user_id int
 );
