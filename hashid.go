@@ -18,7 +18,7 @@ type HashID string
 func NewHashID(id int) HashID {
 	hash, err := hashids.NewWithData(hashData())
 	if err != nil {
-		panic(err)
+		panic(err) // TODO, handle error
 	}
 
 	str, err := hash.Encode([]int{id})
@@ -31,7 +31,7 @@ func NewHashID(id int) HashID {
 func (h HashID) ID() int {
 	hash, err := hashids.NewWithData(hashData())
 	if err != nil {
-		panic(err)
+		panic(err) // TODO, handle error
 	}
 	str := hash.Decode(string(h))
 	if len(str) == 0 {

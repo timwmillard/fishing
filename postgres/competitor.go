@@ -197,10 +197,16 @@ func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fish
 		&i.Postcode,
 		&i.Mobile,
 	)
-	return i, err
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return i, fishing.ErrCompetitorNotFound
+		}
+		return i, err
+	}
+	return i, nil
 }
 
-// Update's an existing competitor.  Returns the updated competitor.
+// Partially update's an existing competitor.  Returns the updated competitor.
 func (r *CompetitorRepo) UpdatePartial(ctx context.Context, id fishing.HashID, params fishing.UpdateCompetitorParams) (fishing.Competitor, error) {
 	arg := newUpdateCompetitorParams(params)
 	row := r.DB.QueryRowContext(ctx, updateCompetitor,
@@ -230,39 +236,13 @@ func (r *CompetitorRepo) UpdatePartial(ctx context.Context, id fishing.HashID, p
 		&i.Postcode,
 		&i.Mobile,
 	)
-	return i, err
-}
-
-// Update's an existing competitor.  Returns the updated competitor.
-func (r *CompetitorRepo) update(ctx context.Context, id fishing.HashID, arg updateCompetitorParams) (fishing.Competitor, error) {
-	row := r.DB.QueryRowContext(ctx, updateCompetitor,
-		id,
-		arg.CompetitorNo,
-		arg.FirstName,
-		arg.LastName,
-		arg.Email,
-		arg.Address1,
-		arg.Address2,
-		arg.Suburb,
-		arg.State,
-		arg.Postcode,
-		arg.Mobile,
-	)
-	var i fishing.Competitor
-	err := row.Scan(
-		&i.ID,
-		&i.CompetitorNo,
-		&i.FirstName,
-		&i.LastName,
-		&i.Email,
-		&i.Address1,
-		&i.Address2,
-		&i.Suburb,
-		&i.State,
-		&i.Postcode,
-		&i.Mobile,
-	)
-	return i, err
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return i, fishing.ErrCompetitorNotFound
+		}
+		return i, err
+	}
+	return i, nil
 }
 
 const deleteCompetitor = `-- name: DeleteCompetitor :execrows
@@ -273,9 +253,16 @@ WHERE id = $1
 
 // Delete's a competitor by id.
 func (r *CompetitorRepo) Delete(ctx context.Context, id fishing.HashID) error {
-	_, err := r.DB.ExecContext(ctx, deleteCompetitor, id)
+	result, err := r.DB.ExecContext(ctx, deleteCompetitor, id)
 	if err != nil {
 		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows < 1 {
+		return fishing.ErrCompetitorNotFound
 	}
 	return nil
 }

@@ -39,8 +39,7 @@ func (h *CompetitorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *CompetitorHandler) List(w http.ResponseWriter, r *http.Request) {
 	competitors, err := h.repo.List(r.Context())
 	if err != nil {
-		h.log.Printf("List Competitors: %v", err)
-		w.WriteHeader(http.StatusNotFound)
+		handleError(w, err, "list competitor")
 		return
 	}
 	json.NewEncoder(w).Encode(competitors)
@@ -50,8 +49,7 @@ func (h *CompetitorHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *CompetitorHandler) Get(w http.ResponseWriter, r *http.Request) {
 	competitor, err := h.repo.Get(r.Context(), fishing.HashID(mux.Vars(r)["id"]))
 	if err != nil {
-		h.log.Printf("Get Competitor: %v", err)
-		w.WriteHeader(http.StatusNotFound)
+		handleError(w, err, "get competitor")
 		return
 	}
 	json.NewEncoder(w).Encode(competitor)
@@ -62,14 +60,12 @@ func (h *CompetitorHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var request fishing.CreateCompetitorParams
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		h.log.Printf("Create Competitor Decode: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
+		handleJSONDecodeError(w, err, "create competitor")
 		return
 	}
 	newCompetitor, err := h.repo.Create(r.Context(), request)
 	if err != nil {
-		h.log.Printf("Create Competitor: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		handleError(w, err, "create competitor")
 		return
 	}
 	json.NewEncoder(w).Encode(newCompetitor)
@@ -84,15 +80,13 @@ func (h *CompetitorHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		h.log.Printf("Update Competitor Decode: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
+		handleJSONDecodeError(w, err, "update competitor")
 		return
 	}
 
 	updatedCompetitor, err := h.repo.Update(r.Context(), fishing.HashID(mux.Vars(r)["id"]), request)
 	if err != nil {
-		h.log.Printf("Update Competitor: %v", err)
-		w.WriteHeader(http.StatusNotFound)
+		handleError(w, err, "update competitor")
 		return
 	}
 	json.NewEncoder(w).Encode(updatedCompetitor)
@@ -107,15 +101,13 @@ func (h *CompetitorHandler) UpdatePartial(w http.ResponseWriter, r *http.Request
 
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		h.log.Printf("Update Competitor Decode: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
+		handleJSONDecodeError(w, err, "partial update competitor")
 		return
 	}
 
 	updatedCompetitor, err := h.repo.UpdatePartial(r.Context(), fishing.HashID(mux.Vars(r)["id"]), request)
 	if err != nil {
-		h.log.Printf("Update Competitor: %v", err)
-		w.WriteHeader(http.StatusNotFound)
+		handleError(w, err, "partial update competitor")
 		return
 	}
 	json.NewEncoder(w).Encode(updatedCompetitor)
@@ -125,8 +117,7 @@ func (h *CompetitorHandler) UpdatePartial(w http.ResponseWriter, r *http.Request
 func (h *CompetitorHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	err := h.repo.Delete(r.Context(), fishing.HashID(mux.Vars(r)["id"]))
 	if err != nil {
-		h.log.Printf("Delete Competitor: %v", err)
-		w.WriteHeader(http.StatusNotFound)
+		handleError(w, err, "delete competitor")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
