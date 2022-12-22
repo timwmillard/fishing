@@ -44,12 +44,7 @@ CREATE TABLE IF NOT EXISTS fishing.competitor  (
   suburb text NOT NULL DEFAULT '',
   state text NOT NULL DEFAULT '',
   postcode text NOT NULL DEFAULT '',
-  phone text NOT NULL DEFAULT '',
   mobile text NOT NULL DEFAULT ''
-  -- paid smallint DEFAULT 0,
-  -- registered smallint DEFAULT 0,
-  -- checkin smallint DEFAULT 0,
-  -- ticket int DEFAULT 0,
   -- team_id int,
   -- user_id int
 );
