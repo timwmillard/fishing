@@ -1,24 +1,29 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func (s *Server) routes() {
-	s.router = mux.NewRouter()
+func (h *CompetitorHandler) routes() {
+	h.Router = mux.NewRouter()
 
 	// Middleware
-	s.router.Use(jsonMiddleware)
-	s.router.Use(corsMiddleware)
+	h.Router.Use(jsonMiddleware)
+	h.Router.Use(corsMiddleware)
 
 	// Routes
-	s.router.HandleFunc("/", index)
-	s.router.HandleFunc("/competitors", s.competitorsHandler.List).Methods(http.MethodGet)           // Get all contacts
-	s.router.HandleFunc("/competitors/{id}", s.competitorsHandler.Get).Methods(http.MethodGet)       // Get contact
-	s.router.HandleFunc("/competitors", s.competitorsHandler.Create).Methods(http.MethodPost)        // Create a contact
-	s.router.HandleFunc("/competitors/{id}", s.competitorsHandler.Update).Methods(http.MethodPut)    // Update a contact
-	s.router.HandleFunc("/competitors/{id}", s.competitorsHandler.Delete).Methods(http.MethodDelete) // Update a contact
+	h.Router.HandleFunc("/", index)
+	h.Router.HandleFunc("/competitors", h.List).Methods(http.MethodGet)           // Get all contacts
+	h.Router.HandleFunc("/competitors/{id}", h.Get).Methods(http.MethodGet)       // Get contact
+	h.Router.HandleFunc("/competitors", h.Create).Methods(http.MethodPost)        // Create a contact
+	h.Router.HandleFunc("/competitors/{id}", h.Update).Methods(http.MethodPut)    // Update a contact
+	h.Router.HandleFunc("/competitors/{id}", h.Delete).Methods(http.MethodDelete) // Update a contact
 
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Welcome to Fishing Comp App")
 }

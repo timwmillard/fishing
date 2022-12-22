@@ -17,7 +17,6 @@ type Competitor struct {
 	Suburb       string `json:"suburb,omitempty" `
 	State        string `json:"state,omitempty" `
 	Postcode     string `json:"postcode,omitempty" `
-	Phone        string `json:"phone,omitempty" `
 	Mobile       string `json:"mobile,omitempty" `
 }
 
@@ -32,7 +31,6 @@ type CompetitorParams struct {
 	Suburb       string `json:"suburb,omitempty"`
 	State        string `json:"state,omitempty"`
 	Postcode     string `json:"postcode,omitempty"`
-	Phone        string `json:"phone,omitempty"`
 	Mobile       string `json:"mobile,omitempty"`
 }
 

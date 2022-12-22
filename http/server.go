@@ -1,48 +1,75 @@
 package http
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
+	"log"
+
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
-	"github.com/timwmillard/fishing/postgres"
 )
 
-// Server -
 type Server struct {
-	DB     *sql.DB
+	port   int
+	server http.Server
 	router *mux.Router
-
-	// Handlers
-	competitorsHandler *CompetitorHandler
+	wg     sync.WaitGroup
 }
 
-// ListenAndServe -
-func (s *Server) ListenAndServe() error {
-	var err error
+func NewServer(port int, router *mux.Router) *Server {
+	return &Server{
+		port:   port,
+		router: router,
+	}
+}
 
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", "?", "?", "localhost", "5432", "fishingcomp")
-	db, err := sql.Open("postgres", connectionString)
-	if err != nil {
-		return fmt.Errorf("database connection error: %v", err)
+// Start will start the server and if it cannot bind to the port
+// it will exit with a fatal log message
+func (c *Server) Start() {
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Create the HTML Server
+	c.server = http.Server{
+		Addr:           fmt.Sprintf(":%d", c.port),
+		Handler:        c.router,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: http.DefaultMaxHeaderBytes,
 	}
 
-	competitorRepo := &postgres.CompetitorRepo{DB: db}
-	s.competitorsHandler = NewCompetitorHandler(competitorRepo)
+	// Add to the WaitGroup for the listener goroutine
+	c.wg.Add(1)
 
-	// Setup Routing
-	s.routes()
+	// Start the listener
+	go func() {
+		if err := c.server.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatalf("Server listen and server error: %v", err) // TODO: should try handle this error
+		}
+		c.wg.Done()
+	}()
+}
 
-	fmt.Printf("Listing on port 6000\n")
-	err = http.ListenAndServe(":6000", s.router)
-	if err != nil {
+// Stop stops the API Server
+func (c *Server) Stop() error {
+	// Create a context to attempt a graceful 5-second shutdown.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Attempt the graceful shutdown by closing the listener
+	// and completing all inflight requests
+	if err := c.server.Shutdown(ctx); err != nil {
+		// Looks like we timed out on the graceful shutdown. Force close.
+		if err = c.server.Close(); err != nil {
+			return err
+		}
 		return err
 	}
-	return nil
-}
 
-func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome to Fishing Comp App")
+	c.wg.Wait()
+	return nil
 }

@@ -15,7 +15,7 @@ type CompetitorRepo struct {
 }
 
 const listCompetitors = `-- name: ListCompetitors :many
-SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
 FROM fishing.competitor
 ORDER BY competitor_no, last_name, first_name ASC
 `
@@ -28,6 +28,7 @@ func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error)
 	}
 	defer rows.Close()
 	var items []fishing.Competitor
+	items = make([]fishing.Competitor, 0)
 	for rows.Next() {
 		var i fishing.Competitor
 		if err := rows.Scan(
@@ -41,7 +42,6 @@ func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error)
 			&i.Suburb,
 			&i.State,
 			&i.Postcode,
-			&i.Phone,
 			&i.Mobile,
 		); err != nil {
 			return nil, err
@@ -58,7 +58,7 @@ func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error)
 }
 
 const getCompetitor = `-- name: GetCompetitor :one
-SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
 FROM fishing.competitor
 WHERE id = $1
 `
@@ -78,7 +78,6 @@ func (r *CompetitorRepo) Get(ctx context.Context, id fishing.HashID) (fishing.Co
 		&i.Suburb,
 		&i.State,
 		&i.Postcode,
-		&i.Phone,
 		&i.Mobile,
 	)
 	return i, err
@@ -86,11 +85,11 @@ func (r *CompetitorRepo) Get(ctx context.Context, id fishing.HashID) (fishing.Co
 
 const createCompetitor = `-- name: CreateCompetitor :one
 INSERT INTO fishing.competitor (
-	competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+	competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
 ) VALUES (
-	$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+	$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 )
-RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
 `
 
 // Create's a new competitor.
@@ -105,7 +104,6 @@ func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CompetitorParam
 		arg.Suburb,
 		arg.State,
 		arg.Postcode,
-		arg.Phone,
 		arg.Mobile,
 	)
 	var i fishing.Competitor
@@ -120,7 +118,6 @@ func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CompetitorParam
 		&i.Suburb,
 		&i.State,
 		&i.Postcode,
-		&i.Phone,
 		&i.Mobile,
 	)
 	return i, err
@@ -137,10 +134,9 @@ SET competitor_no = $2,
     suburb = $8,
     state = $9,
     postcode = $10,
-    phone = $11,
-    mobile = $12
+    mobile = $11
 WHERE id = $1
-RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
 `
 
 // Update's an existing competitor.  Returns the updated competitor.
@@ -156,7 +152,6 @@ func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fish
 		arg.Suburb,
 		arg.State,
 		arg.Postcode,
-		arg.Phone,
 		arg.Mobile,
 	)
 	var i fishing.Competitor
@@ -171,7 +166,6 @@ func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fish
 		&i.Suburb,
 		&i.State,
 		&i.Postcode,
-		&i.Phone,
 		&i.Mobile,
 	)
 	return i, err

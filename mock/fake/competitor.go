@@ -17,7 +17,6 @@ func Competitor() fishing.Competitor {
 		Address1:  fake.StreetAddress(),
 		Suburb:    fake.City(),
 		Postcode:  fake.DigitsN(4),
-		Phone:     fake.Phone(),
 		Mobile:    fake.Phone(),
 	}
 }

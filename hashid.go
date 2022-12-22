@@ -56,8 +56,8 @@ func (h *HashID) Scan(value interface{}) error {
 	}
 }
 
-func (h *HashID) Value() (driver.Value, error) {
-	return h.ID, nil
+func (h HashID) Value() (driver.Value, error) {
+	return int64(h.ID()), nil
 }
 
 func hashData() *hashids.HashIDData {

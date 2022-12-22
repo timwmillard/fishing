@@ -13,7 +13,7 @@ import (
 // CompetitorHandler -
 type CompetitorHandler struct {
 	repo   fishing.CompetitorRepo
-	router *mux.Router
+	Router *mux.Router
 	log    *log.Logger
 	// errLog  *log.Logger
 	// infoLog *log.Logger
@@ -21,16 +21,18 @@ type CompetitorHandler struct {
 
 // NewCompetitorsHandler -
 func NewCompetitorHandler(repo fishing.CompetitorRepo) *CompetitorHandler {
-	return &CompetitorHandler{
+	h := &CompetitorHandler{
 		repo:   repo,
-		router: mux.NewRouter(),
+		Router: mux.NewRouter(),
 		log:    log.New(os.Stderr, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile),
 	}
+	h.routes()
+	return h
 }
 
 // ServeHTTP -
 func (h *CompetitorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.router.ServeHTTP(w, r)
+	h.Router.ServeHTTP(w, r)
 }
 
 // List -
