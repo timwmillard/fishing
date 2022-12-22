@@ -1,8 +1,9 @@
-version: "1"
-packages:
-  - name: "sqlc"
-    path: "./"
-    queries: "./"
-    schema: "../migrations/"
-    engine: "postgresql"
-    emit_interface: true
+version: "2"
+sql:
+- schema: "../migrations/"
+  queries: "./"
+  engine: "postgresql"
+  gen:
+    go: 
+      package: "sqlc"
+      out: "./"
