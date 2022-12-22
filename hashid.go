@@ -1,6 +1,9 @@
 package fishing
 
 import (
+	"database/sql/driver"
+	"errors"
+
 	"github.com/speps/go-hashids/v2"
 )
 
@@ -35,6 +38,26 @@ func (h HashID) ID() int {
 		return 0
 	}
 	return str[0]
+}
+
+func (h *HashID) Scan(value interface{}) error {
+	switch v := value.(type) {
+	case int64:
+		*h = NewHashID(int(v))
+		return nil
+	case int32:
+		*h = NewHashID(int(v))
+		return nil
+	case int:
+		*h = NewHashID(v)
+		return nil
+	default:
+		return errors.New("invalid hashid, must be an integer")
+	}
+}
+
+func (h *HashID) Value() (driver.Value, error) {
+	return h.ID, nil
 }
 
 func hashData() *hashids.HashIDData {
