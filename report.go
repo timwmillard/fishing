@@ -2,8 +2,6 @@ package fishing
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type ReportService struct {
@@ -16,7 +14,7 @@ type CompetitorReport struct {
 	Catches []Catch
 }
 
-func (rs *ReportService) CompetitorReport(ctx context.Context, id uuid.UUID) (CompetitorReport, error) {
+func (rs *ReportService) CompetitorReport(ctx context.Context, id HashID) (CompetitorReport, error) {
 	competitor, err := rs.competitorRepo.Get(ctx, id)
 	if err != nil {
 		return CompetitorReport{}, nil

@@ -1,25 +1,25 @@
 
 CREATE SCHEMA IF NOT EXISTS fishing;
 
--- CREATE TABLE competitions (
+-- CREATE TABLE competition (
 --   id uuid NOT NULL PRIMARY KEY,
 --   organisation_id int,
---   short_name varchar(63),
---   name varchar(255),
---   logo_url varchar(255),
---   custom_domain varchar(255),
+--   short_name text,
+--   name text,
+--   logo_url text,
+--   custom_domain text,
 --   current_event int,
 --   settings json
 -- );
 
--- CREATE TABLE events (
+-- CREATE TABLE event (
 --   id uuid NOT NULL PRIMARY KEY,
 --   competition_id int,
 --   slug varchar(50),
---   name varchar(255),
+--   name text,
 --   start_date date,
 --   end_date date,
---   location varchar(255),
+--   location text,
 --   status int,
 --   settings json
 -- );
@@ -28,24 +28,24 @@ CREATE SCHEMA IF NOT EXISTS fishing;
 --   id uuid NOT NULL PRIMARY KEY,
 --   event_id int,
 --   team_no int,
---   name varchar(255),
+--   name text,
 --   boat_rego varchar(20)
 -- );
 
-CREATE TABLE IF NOT EXISTS fishing.competitors  (
-  id uuid NOT NULL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS fishing.competitor  (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   -- event_id uuid NOT NULL,
-  competitor_no varchar(255) NOT NULL DEFAULT '',
-  firstname varchar(255) NOT NULL DEFAULT '',
-  lastname varchar(255) NOT NULL DEFAULT '',
-  email varchar(255) NOT NULL DEFAULT '',
-  address1 varchar(255) NOT NULL DEFAULT '',
-  address2 varchar(255) NOT NULL DEFAULT '',
-  suburb varchar(255) NOT NULL DEFAULT '',
-  state varchar(255) NOT NULL DEFAULT '',
-  postcode varchar(20) NOT NULL DEFAULT '',
-  phone varchar(20) NOT NULL DEFAULT '',
-  mobile varchar(20) NOT NULL DEFAULT ''
+  competitor_no text NOT NULL DEFAULT '',
+  first_name text NOT NULL DEFAULT '',
+  last_name text NOT NULL DEFAULT '',
+  email text NOT NULL DEFAULT '',
+  address1 text NOT NULL DEFAULT '',
+  address2 text NOT NULL DEFAULT '',
+  suburb text NOT NULL DEFAULT '',
+  state text NOT NULL DEFAULT '',
+  postcode text NOT NULL DEFAULT '',
+  phone text NOT NULL DEFAULT '',
+  mobile text NOT NULL DEFAULT ''
   -- paid smallint DEFAULT 0,
   -- registered smallint DEFAULT 0,
   -- checkin smallint DEFAULT 0,
@@ -54,18 +54,18 @@ CREATE TABLE IF NOT EXISTS fishing.competitors  (
   -- user_id int
 );
 
--- CREATE TABLE catches (
+-- CREATE TABLE catch (
 --   id uuid NOT NULL PRIMARY KEY,
 --   event_id int,
 --   competitor_id int,
 --   species_id int,
 --   size int,
 --   caught_at datetime,
---   bait varchar(255) NOT NULL DEFAULT '',
---   location varchar(255) NOT NULL DEFAULT '',
+--   bait text NOT NULL DEFAULT '',
+--   location text NOT NULL DEFAULT '',
 --   latitude double NOT NULL DEFAULT 0.0,
 --   longitude double NOT NULL DEFAULT 0.0,
---   marshall varchar(255) NOT NULL DEFAULT '',
+--   marshall text NOT NULL DEFAULT '',
 --   marshall_id int,
 --   status int DEFAULT 0
 -- );
@@ -73,33 +73,33 @@ CREATE TABLE IF NOT EXISTS fishing.competitors  (
 -- CREATE TABLE species (
 --   id uuid NOT NULL PRIMARY KEY,
 --   slug varchar(50) UNIQUE NOT NULL,
---   common_name varchar(255) UNIQUE NOT NULL,
---   scientific_name varchar(255) NOT NULL DEFAULT '',
---   photo_url varchar(255) NOT NULL DEFAULT ''
+--   common_name text UNIQUE NOT NULL,
+--   scientific_name text NOT NULL DEFAULT '',
+--   photo_url text NOT NULL DEFAULT ''
 -- );
 
--- CREATE TABLE users (
+-- CREATE TABLE user (
 --   id uuid NOT NULL PRIMARY KEY,
---   username varchar(255) UNIQUE NOT NULL,
---   password varchar(255) NOT NULL,
---   firstname varchar(255),
---   lastname varchar(255),
---   email varchar(255),
---   mobile varchar(255),
---   api_token varchar(255),
---   address1 varchar(255),
---   address2 varchar(255),
---   suburb varchar(255),
---   state varchar(255),
---   postcode varchar(255),
---   stripe_billing_id varchar(255),
+--   username text UNIQUE NOT NULL,
+--   password text NOT NULL,
+--   firstname text,
+--   lastname text,
+--   email text,
+--   mobile text,
+--   api_token text,
+--   address1 text,
+--   address2 text,
+--   suburb text,
+--   state text,
+--   postcode text,
+--   stripe_billing_id text,
 --   settings json
 -- );
 
--- CREATE TABLE tickets (
+-- CREATE TABLE ticket (
 --   id uuid NOT NULL PRIMARY KEY,
 --   event_id int,
---   name varchar(255),
+--   name text,
 --   start_competitor_no int,
 --   next_competitor_no int,
 --   price int,
@@ -107,54 +107,54 @@ CREATE TABLE IF NOT EXISTS fishing.competitors  (
 --   max_no_competitors int
 -- );
 
--- CREATE TABLE clubs (
+-- CREATE TABLE club (
 --   id uuid NOT NULL PRIMARY KEY,
---   name varchar(255),
---   billing_address1 varchar(255),
---   billing_address2 varchar(255),
---   billing_suburb varchar(255),
---   billing_state varchar(255),
---   billing_postcode varchar(255),
---   stripe_billing_id varchar(255),
+--   name text,
+--   billing_address1 text,
+--   billing_address2 text,
+--   billing_suburb text,
+--   billing_state text,
+--   billing_postcode text,
+--   stripe_billing_id text,
 --   owner int,
 --   settings json
 -- );
 
--- CREATE TABLE organisation_users (
---   organisation_id int,
+-- CREATE TABLE club_users (
+--   club_id int,
 --   user_id int,
 --   admin smallint,
 --   marshall smallint
 -- );
 
--- ALTER TABLE competitions ADD FOREIGN KEY (organisation_id) REFERENCES organisations (id);
+-- ALTER TABLE competition ADD FOREIGN KEY (club_id) REFERENCES clubs (id);
 
--- ALTER TABLE competitions ADD FOREIGN KEY (current_event) REFERENCES events (id);
+-- ALTER TABLE competition ADD FOREIGN KEY (current_event) REFERENCES event (id);
 
--- ALTER TABLE events ADD FOREIGN KEY (competition_id) REFERENCES competitions (id);
+-- ALTER TABLE event ADD FOREIGN KEY (competition_id) REFERENCES competition (id);
 
--- ALTER TABLE team ADD FOREIGN KEY (event_id) REFERENCES events (id);
+-- ALTER TABLE team ADD FOREIGN KEY (event_id) REFERENCES event (id);
 
--- ALTER TABLE competitors ADD FOREIGN KEY (event_id) REFERENCES events (id);
+-- ALTER TABLE competitor ADD FOREIGN KEY (event_id) REFERENCES event (id);
 
--- /* ALTER TABLE competitors ADD FOREIGN KEY (ticket) REFERENCES tickets (id); */
+-- /* ALTER TABLE competitor ADD FOREIGN KEY (ticket) REFERENCES tickets (id); */
 
--- ALTER TABLE competitors ADD FOREIGN KEY (team_id) REFERENCES team (id);
+-- ALTER TABLE competitor ADD FOREIGN KEY (team_id) REFERENCES team (id);
 
--- ALTER TABLE competitors ADD FOREIGN KEY (user_id) REFERENCES users (id);
+-- ALTER TABLE competitor ADD FOREIGN KEY (user_id) REFERENCES users (id);
 
--- ALTER TABLE catches ADD FOREIGN KEY (event_id) REFERENCES events (id);
+-- ALTER TABLE catche ADD FOREIGN KEY (event_id) REFERENCES event (id);
 
--- ALTER TABLE catches ADD FOREIGN KEY (competitor_id) REFERENCES competitors (id);
+-- ALTER TABLE catche ADD FOREIGN KEY (competitor_id) REFERENCES competitor (id);
 
--- ALTER TABLE catches ADD FOREIGN KEY (species_id) REFERENCES species (id);
+-- ALTER TABLE catche ADD FOREIGN KEY (species_id) REFERENCES species (id);
 
--- ALTER TABLE catches ADD FOREIGN KEY (marshall_id) REFERENCES users (id);
+-- ALTER TABLE catche ADD FOREIGN KEY (marshall_id) REFERENCES user (id);
 
--- ALTER TABLE tickets ADD FOREIGN KEY (event_id) REFERENCES events (id);
+-- ALTER TABLE tickets ADD FOREIGN KEY (event_id) REFERENCES event (id);
 
--- ALTER TABLE organisations ADD FOREIGN KEY (owner) REFERENCES users (id);
+-- ALTER TABLE club ADD FOREIGN KEY (owner) REFERENCES user (id);
 
--- ALTER TABLE organisation_users ADD FOREIGN KEY (organisation_id) REFERENCES organisations (id);
+-- ALTER TABLE club_user ADD FOREIGN KEY (club_id) REFERENCES clubs (id);
 
--- ALTER TABLE organisation_users ADD FOREIGN KEY (user_id) REFERENCES users (id);
+-- ALTER TABLE club_user ADD FOREIGN KEY (user_id) REFERENCES user (id);

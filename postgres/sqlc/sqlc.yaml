@@ -2,7 +2,7 @@ version: "1"
 packages:
   - name: "sqlc"
     path: "sqlc"
-    queries: "queries/"
-    schema: "migrations/"
+    queries: "./"
+    schema: "../migrations/"
     engine: "postgresql"
     emit_interface: true

@@ -31,6 +31,6 @@ type CatchRepo interface {
 	Update(id uuid.UUID, c Catch) (Catch, error)
 	Delete(id uuid.UUID) error
 
-	ListByCompetitor(competitorID uuid.UUID) ([]Catch, error)
-	ListByTeam(teamID uuid.UUID) ([]Catch, error)
+	ListByCompetitor(competitorID HashID) ([]Catch, error)
+	ListByTeam(teamID HashID) ([]Catch, error)
 }

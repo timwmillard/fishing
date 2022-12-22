@@ -3,109 +3,191 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 
-	"github.com/google/uuid"
 	"github.com/timwmillard/fishing"
-	"github.com/timwmillard/fishing/postgres/sqlc"
 )
 
 var _ fishing.CompetitorRepo = (*CompetitorRepo)(nil)
 
 // CompetitorRepo is a repository of competitors.
 type CompetitorRepo struct {
-	query sqlc.Querier
+	db DBTX
 }
 
-// NewCompetitorsRepo returns a new competitor repository.
-// connection is a existing sql.sqlc connection.
-func NewCompetitorRepo(connection *sql.DB) *CompetitorRepo {
-	return &CompetitorRepo{
-		query: sqlc.New(connection),
-	}
-}
-
-// newCompetitorRepoWithQuerier used to add a mock Querier for testing.
-func newCompetitorRepoWithQuerier(q sqlc.Querier) *CompetitorRepo {
-	return &CompetitorRepo{
-		query: q,
-	}
-}
+const listCompetitors = `-- name: ListCompetitors :many
+SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+FROM fishing.competitors
+ORDER BY competitor_no, last_name, first_name ASC
+`
 
 // List returns a list of all competitors.
 func (r *CompetitorRepo) List(ctx context.Context) ([]fishing.Competitor, error) {
-	comps, err := r.query.ListCompetitors(ctx)
+	rows, err := r.db.QueryContext(ctx, listCompetitors)
 	if err != nil {
 		return nil, err
 	}
-	return competitors(comps), nil
-
+	defer rows.Close()
+	var items []fishing.Competitor
+	for rows.Next() {
+		var i fishing.Competitor
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompetitorNo,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.Address1,
+			&i.Address2,
+			&i.Suburb,
+			&i.State,
+			&i.Postcode,
+			&i.Phone,
+			&i.Mobile,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
+
+const getCompetitor = `-- name: GetCompetitor :one
+SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+FROM fishing.competitors
+WHERE id = $1
+`
 
 // Get's a single competitor by id.
-func (r *CompetitorRepo) Get(ctx context.Context, id uuid.UUID) (fishing.Competitor, error) {
-	comp, err := r.query.GetCompetitor(ctx, id)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			err = fishing.ErrCompetitorNotFound
-		}
-		return fishing.Competitor{}, err
-	}
-	return competitor(comp), nil
+func (r *CompetitorRepo) Get(ctx context.Context, id fishing.HashID) (fishing.Competitor, error) {
+	row := r.db.QueryRowContext(ctx, getCompetitor, id)
+	var i fishing.Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitorNo,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Phone,
+		&i.Mobile,
+	)
+	return i, err
 }
+
+const createCompetitor = `-- name: CreateCompetitor :one
+INSERT INTO fishing.competitors (
+	competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+) VALUES (
+	$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+)
+RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+`
 
 // Create's a new competitor.
-func (r *CompetitorRepo) Create(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
-	comp, err := r.query.CreateCompetitor(ctx, createCompetitorParams(c))
-	if err != nil {
-		return fishing.Competitor{}, err
-	}
-	return competitor(comp), nil
+func (r *CompetitorRepo) Create(ctx context.Context, arg fishing.CompetitorParams) (fishing.Competitor, error) {
+	row := r.db.QueryRowContext(ctx, createCompetitor,
+		arg.CompetitorNo,
+		arg.FirstName,
+		arg.LastName,
+		arg.Email,
+		arg.Address1,
+		arg.Address2,
+		arg.Suburb,
+		arg.State,
+		arg.Postcode,
+		arg.Phone,
+		arg.Mobile,
+	)
+	var i fishing.Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitorNo,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Phone,
+		&i.Mobile,
+	)
+	return i, err
 }
+
+const updateCompetitor = `-- name: UpdateCompetitor :one
+UPDATE fishing.competitors
+SET competitor_no = $2,
+    first_name = $3,
+    last_name = $4,
+    email = $5, 
+    address1 = $6,
+    address2 = $7,
+    suburb = $8,
+    state = $9,
+    postcode = $10,
+    phone = $11,
+    mobile = $12
+WHERE id = $1
+RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, phone, mobile
+`
 
 // Update's an existing competitor.  Returns the updated competitor.
-func (r *CompetitorRepo) Update(ctx context.Context, c fishing.Competitor) (fishing.Competitor, error) {
-	comp, err := r.query.UpdateCompetitor(ctx, updateCompetitorParams(c))
-	if err != nil {
-		if err == sql.ErrNoRows {
-			err = fishing.ErrCompetitorNotFound
-		}
-		return fishing.Competitor{}, err
-	}
-	return competitor(comp), nil
+func (r *CompetitorRepo) Update(ctx context.Context, id fishing.HashID, arg fishing.CompetitorParams) (fishing.Competitor, error) {
+	row := r.db.QueryRowContext(ctx, updateCompetitor,
+		id,
+		arg.CompetitorNo,
+		arg.FirstName,
+		arg.LastName,
+		arg.Email,
+		arg.Address1,
+		arg.Address2,
+		arg.Suburb,
+		arg.State,
+		arg.Postcode,
+		arg.Phone,
+		arg.Mobile,
+	)
+	var i fishing.Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitorNo,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Phone,
+		&i.Mobile,
+	)
+	return i, err
 }
 
-// Delete's a competitor by id.
-func (r *CompetitorRepo) Delete(ctx context.Context, id uuid.UUID) error {
+const deleteCompetitor = `-- name: DeleteCompetitor :execrows
+DELETE
+FROM fishing.competitors
+WHERE id = $1
+`
 
-	numDeleted, err := r.query.DeleteCompetitor(ctx, id)
+// Delete's a competitor by id.
+func (r *CompetitorRepo) Delete(ctx context.Context, id fishing.HashID) error {
+	_, err := r.db.ExecContext(ctx, deleteCompetitor, id)
 	if err != nil {
 		return err
 	}
-	if numDeleted < 1 {
-		return fishing.ErrCompetitorNotFound
-	}
-
 	return nil
-}
-
-func createCompetitorParams(c fishing.Competitor) sqlc.CreateCompetitorParams {
-	return sqlc.CreateCompetitorParams(c)
-}
-
-func updateCompetitorParams(c fishing.Competitor) sqlc.UpdateCompetitorParams {
-	return sqlc.UpdateCompetitorParams(c)
-}
-
-func competitors(sqlcComps []sqlc.FishingCompetitor) []fishing.Competitor {
-	fishComps := make([]fishing.Competitor, 0, len(sqlcComps))
-	for _, c := range sqlcComps {
-		p := competitor(c)
-		fishComps = append(fishComps, p)
-	}
-	return fishComps
-}
-
-func competitor(c sqlc.FishingCompetitor) fishing.Competitor {
-	return fishing.Competitor(c)
 }
