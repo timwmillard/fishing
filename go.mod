@@ -8,11 +8,11 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20210315143101-93e15499afd5 // indirect
 	github.com/golang-migrate/migrate/v4 v4.14.1
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gotestyourself/gotestyourself v1.3.0 // indirect
-	github.com/icrowley/fake v0.0.0-20221112152111-d7b7e2276db2 // indirect
+	github.com/icrowley/fake v0.0.0-20221112152111-d7b7e2276db2
 	github.com/lib/pq v1.10.0
 	github.com/matryer/is v1.4.0
 	github.com/opencontainers/runc v1.0.0-rc93 // indirect
