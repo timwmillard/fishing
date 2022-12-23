@@ -47,7 +47,12 @@ func (h *CompetitorHandler) List(w http.ResponseWriter, r *http.Request) {
 
 // Get -
 func (h *CompetitorHandler) Get(w http.ResponseWriter, r *http.Request) {
-	competitor, err := h.repo.Get(r.Context(), fishing.HashID(mux.Vars(r)["id"]))
+	id, err := fishing.NewHashID(mux.Vars(r)["id"])
+	if err != nil {
+		handleError(w, err, "get competitor")
+		return
+	}
+	competitor, err := h.repo.Get(r.Context(), id)
 	if err != nil {
 		handleError(w, err, "get competitor")
 		return
@@ -78,13 +83,19 @@ func (h *CompetitorHandler) Update(w http.ResponseWriter, r *http.Request) {
 		err     error
 	)
 
+	id, err := fishing.NewHashID(mux.Vars(r)["id"])
+	if err != nil {
+		handleError(w, err, "update competitor")
+		return
+	}
+
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		handleJSONDecodeError(w, err, "update competitor")
 		return
 	}
 
-	updatedCompetitor, err := h.repo.Update(r.Context(), fishing.HashID(mux.Vars(r)["id"]), request)
+	updatedCompetitor, err := h.repo.Update(r.Context(), id, request)
 	if err != nil {
 		handleError(w, err, "update competitor")
 		return
@@ -99,13 +110,19 @@ func (h *CompetitorHandler) UpdatePartial(w http.ResponseWriter, r *http.Request
 		err     error
 	)
 
+	id, err := fishing.NewHashID(mux.Vars(r)["id"])
+	if err != nil {
+		handleError(w, err, "partial update competitor")
+		return
+	}
+
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		handleJSONDecodeError(w, err, "partial update competitor")
 		return
 	}
 
-	updatedCompetitor, err := h.repo.UpdatePartial(r.Context(), fishing.HashID(mux.Vars(r)["id"]), request)
+	updatedCompetitor, err := h.repo.UpdatePartial(r.Context(), id, request)
 	if err != nil {
 		handleError(w, err, "partial update competitor")
 		return
@@ -115,7 +132,12 @@ func (h *CompetitorHandler) UpdatePartial(w http.ResponseWriter, r *http.Request
 
 // Delete -
 func (h *CompetitorHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	err := h.repo.Delete(r.Context(), fishing.HashID(mux.Vars(r)["id"]))
+	id, err := fishing.NewHashID(mux.Vars(r)["id"])
+	if err != nil {
+		handleError(w, err, "update competitor")
+		return
+	}
+	err = h.repo.Delete(r.Context(), id)
 	if err != nil {
 		handleError(w, err, "delete competitor")
 		return

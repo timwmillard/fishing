@@ -1,16 +1,14 @@
 package fake
 
 import (
-	"strconv"
-
 	"github.com/icrowley/fake"
 	"github.com/timwmillard/fishing"
 )
 
 func Competitor() fishing.Competitor {
-	id, _ := strconv.Atoi(fake.Digits())
+	hid, _ := fishing.NewHashID(fake.Digits())
 	return fishing.Competitor{
-		ID:        fishing.NewHashID(id),
+		ID:        hid,
 		FirstName: fake.FirstName(),
 		LastName:  fake.LastName(),
 		Email:     fake.EmailAddress(),
