@@ -4,6 +4,8 @@ ENV ?= local
 -include .env
 -include .env.$(ENV)
 
+DATABASE_URL=postgresql://$(PGUSER):$(PGPASSWORD)@$(PGHOST):$(PGPORT)/$(PGDATABASE)
+
 env:
 	@echo ENV=$(ENV)
 	@echo PORT=$(PORT)
@@ -55,7 +57,7 @@ sleep:
 	sleep 5
 
 psql: ## Run the local psql connecting the docker database
-	psql -h localhost -U $(PGUSER) -p $(PGPORT) -d $(PGDATABASE)
+	psql $(DATABASE_URL)
 
 migrate: migrate-up ## Migrate up docker database
 
