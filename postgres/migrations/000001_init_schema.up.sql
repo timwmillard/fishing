@@ -43,10 +43,11 @@ CREATE TABLE IF NOT EXISTS fishing.competitor  (
   suburb text NOT NULL DEFAULT '',
   state text NOT NULL DEFAULT '',
   postcode text NOT NULL DEFAULT '',
-  mobile text NOT NULL DEFAULT ''
-  -- event_id uuid NOT NULL,
+  mobile text NOT NULL DEFAULT '',
+  event_id bigint NOT NULL,
   -- team_id int,
   -- user_id int
+  UNIQUE(event_id, competitor_no)
 );
 
 -- CREATE TABLE catch (

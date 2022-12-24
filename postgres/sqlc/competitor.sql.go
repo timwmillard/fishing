@@ -7,6 +7,8 @@ package sqlc
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createCompetitor = `-- name: CreateCompetitor :one
@@ -15,7 +17,7 @@ INSERT INTO fishing.competitor (
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 )
-RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
+RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile, event_id
 `
 
 type CreateCompetitorParams struct {
@@ -59,6 +61,7 @@ func (q *Queries) CreateCompetitor(ctx context.Context, arg CreateCompetitorPara
 		&i.State,
 		&i.Postcode,
 		&i.Mobile,
+		&i.EventID,
 	)
 	return i, err
 }
@@ -83,9 +86,67 @@ FROM fishing.competitor
 WHERE id = $1
 `
 
-func (q *Queries) GetCompetitor(ctx context.Context, id int64) (FishingCompetitor, error) {
+type GetCompetitorRow struct {
+	ID           int64
+	CompetitorNo string
+	FirstName    string
+	LastName     string
+	Email        string
+	Address1     string
+	Address2     string
+	Suburb       string
+	State        string
+	Postcode     string
+	Mobile       string
+}
+
+func (q *Queries) GetCompetitor(ctx context.Context, id int64) (GetCompetitorRow, error) {
 	row := q.db.QueryRowContext(ctx, getCompetitor, id)
-	var i FishingCompetitor
+	var i GetCompetitorRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitorNo,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Mobile,
+	)
+	return i, err
+}
+
+const getCompetitorByCompetitorNo = `-- name: GetCompetitorByCompetitorNo :one
+SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
+FROM fishing.competitor
+WHERE event_id = $1 AND competitor_no = $2
+`
+
+type GetCompetitorByCompetitorNoParams struct {
+	EventID      uuid.UUID
+	CompetitorNo string
+}
+
+type GetCompetitorByCompetitorNoRow struct {
+	ID           int64
+	CompetitorNo string
+	FirstName    string
+	LastName     string
+	Email        string
+	Address1     string
+	Address2     string
+	Suburb       string
+	State        string
+	Postcode     string
+	Mobile       string
+}
+
+func (q *Queries) GetCompetitorByCompetitorNo(ctx context.Context, arg GetCompetitorByCompetitorNoParams) (GetCompetitorByCompetitorNoRow, error) {
+	row := q.db.QueryRowContext(ctx, getCompetitorByCompetitorNo, arg.EventID, arg.CompetitorNo)
+	var i GetCompetitorByCompetitorNoRow
 	err := row.Scan(
 		&i.ID,
 		&i.CompetitorNo,
@@ -108,15 +169,29 @@ FROM fishing.competitor
 ORDER BY competitor_no, last_name, first_name ASC
 `
 
-func (q *Queries) ListCompetitor(ctx context.Context) ([]FishingCompetitor, error) {
+type ListCompetitorRow struct {
+	ID           int64
+	CompetitorNo string
+	FirstName    string
+	LastName     string
+	Email        string
+	Address1     string
+	Address2     string
+	Suburb       string
+	State        string
+	Postcode     string
+	Mobile       string
+}
+
+func (q *Queries) ListCompetitor(ctx context.Context) ([]ListCompetitorRow, error) {
 	rows, err := q.db.QueryContext(ctx, listCompetitor)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []FishingCompetitor
+	var items []ListCompetitorRow
 	for rows.Next() {
-		var i FishingCompetitor
+		var i ListCompetitorRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CompetitorNo,
@@ -156,7 +231,7 @@ SET competitor_no = COALESCE($2, competitor_no),
     postcode = COALESCE($10, postcode),
     mobile = COALESCE($11, mobile)
 WHERE id = $1
-RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
+RETURNING id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile, event_id
 `
 
 type UpdateCompetitorParams struct {
@@ -200,6 +275,7 @@ func (q *Queries) UpdateCompetitor(ctx context.Context, arg UpdateCompetitorPara
 		&i.State,
 		&i.Postcode,
 		&i.Mobile,
+		&i.EventID,
 	)
 	return i, err
 }

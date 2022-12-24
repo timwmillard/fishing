@@ -272,3 +272,28 @@ func (r *CompetitorRepo) Delete(ctx context.Context, id fishing.HashID) error {
 	}
 	return nil
 }
+
+const getCompetitorByCompetitorNo = `-- name: GetCompetitorByCompetitorNo :one
+SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
+FROM fishing.competitor
+WHERE event_id = $1 AND competitor_no = $2
+`
+
+func (r *CompetitorRepo) GetCompetitorByCompetitorNo(ctx context.Context, eventID fishing.HashID, competitorNo string) (fishing.Competitor, error) {
+	row := r.DB.QueryRowContext(ctx, getCompetitorByCompetitorNo, eventID, competitorNo)
+	var i fishing.Competitor
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitorNo,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Address1,
+		&i.Address2,
+		&i.Suburb,
+		&i.State,
+		&i.Postcode,
+		&i.Mobile,
+	)
+	return i, err
+}

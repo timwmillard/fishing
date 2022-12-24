@@ -4,7 +4,9 @@
 
 package sqlc
 
-import ()
+import (
+	"github.com/google/uuid"
+)
 
 type FishingCompetitor struct {
 	ID           int64
@@ -18,4 +20,5 @@ type FishingCompetitor struct {
 	State        string
 	Postcode     string
 	Mobile       string
+	EventID      uuid.UUID
 }

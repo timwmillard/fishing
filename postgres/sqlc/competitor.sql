@@ -9,6 +9,11 @@ SELECT id, competitor_no, first_name, last_name, email, address1, address2, subu
 FROM fishing.competitor
 WHERE id = $1;
 
+-- name: GetCompetitorByCompetitorNo :one
+SELECT id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
+FROM fishing.competitor
+WHERE event_id = $1 AND competitor_no = $2;
+
 -- name: CreateCompetitor :one
 INSERT INTO fishing.competitor (
     id, competitor_no, first_name, last_name, email, address1, address2, suburb, state, postcode, mobile
