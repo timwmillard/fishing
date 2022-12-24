@@ -8,21 +8,19 @@ import (
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type Server struct {
-	port   int
-	server http.Server
-	router *mux.Router
-	wg     sync.WaitGroup
+	port    int
+	server  http.Server
+	handler http.Handler
+	wg      sync.WaitGroup
 }
 
-func NewServer(port int, router *mux.Router) *Server {
+func NewServer(port int, router http.Handler) *Server {
 	return &Server{
-		port:   port,
-		router: router,
+		port:    port,
+		handler: router,
 	}
 }
 
@@ -35,7 +33,7 @@ func (s *Server) Start() {
 	// Create the HTML Server
 	s.server = http.Server{
 		Addr:           fmt.Sprintf(":%d", s.port),
-		Handler:        s.router,
+		Handler:        s.handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: http.DefaultMaxHeaderBytes,

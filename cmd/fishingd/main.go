@@ -49,7 +49,7 @@ func main() {
 	competitorRepo := &postgres.CompetitorRepo{DB: db}
 	competitorHandler := http.NewCompetitorHandler(competitorRepo)
 
-	server := http.NewServer(port, competitorHandler.Router)
+	server := http.NewServer(port, competitorHandler)
 	server.Start()
 
 	defer func(server *http.Server) {

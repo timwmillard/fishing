@@ -1,11 +1,14 @@
 package http
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
-func jsonMiddleware(h http.Handler) http.Handler {
+func jsonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		h.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
 	})
 }
 
@@ -22,4 +25,18 @@ func corsMiddleware(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+func auth(token string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			authHeader := r.Header.Get("Authorization")
+			reqToken := strings.TrimPrefix(authHeader, "Bearer ")
+			if reqToken != token {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 }

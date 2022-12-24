@@ -12,6 +12,7 @@ func (h *CompetitorHandler) routes() {
 	h.Router = mux.NewRouter()
 
 	// Middleware
+	h.Router.Use(auth("test"))
 	h.Router.Use(jsonMiddleware)
 	h.Router.Use(corsMiddleware)
 
