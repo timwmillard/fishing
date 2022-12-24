@@ -9,22 +9,26 @@ import (
 )
 
 func (h *CompetitorHandler) routes() {
-	h.Router = mux.NewRouter()
+	router := mux.NewRouter()
+	h.Router = router
 
 	// Middleware
-	h.Router.Use(auth("test"))
-	h.Router.Use(jsonMiddleware)
-	h.Router.Use(corsMiddleware)
+	router.Use(jsonMiddleware)
+	router.Use(corsMiddleware)
+	router.HandleFunc("/", index)
+	router.HandleFunc("/health", health)
+
+	compRouter := router.PathPrefix("/competitors").Subrouter()
+
+	compRouter.Use(auth("test"))
 
 	// Routes
-	h.Router.HandleFunc("/", index)
-	h.Router.HandleFunc("/health", health)
-	h.Router.HandleFunc("/competitors", h.List).Methods(http.MethodGet)                 // Get all competitors
-	h.Router.HandleFunc("/competitors", h.Create).Methods(http.MethodPost)              // Create a competitors
-	h.Router.HandleFunc("/competitors/{id}", h.Get).Methods(http.MethodGet)             // Get a competitors
-	h.Router.HandleFunc("/competitors/{id}", h.Update).Methods(http.MethodPut)          // Update a competitors
-	h.Router.HandleFunc("/competitors/{id}", h.UpdatePartial).Methods(http.MethodPatch) // Partial update a competitors
-	h.Router.HandleFunc("/competitors/{id}", h.Delete).Methods(http.MethodDelete)       // Delete a competitors
+	compRouter.HandleFunc("", h.List).Methods(http.MethodGet)                 // Get all competitors
+	compRouter.HandleFunc("", h.Create).Methods(http.MethodPost)              // Create a competitors
+	compRouter.HandleFunc("/{id}", h.Get).Methods(http.MethodGet)             // Get a competitors
+	compRouter.HandleFunc("/{id}", h.Update).Methods(http.MethodPut)          // Update a competitors
+	compRouter.HandleFunc("/{id}", h.UpdatePartial).Methods(http.MethodPatch) // Partial update a competitors
+	compRouter.HandleFunc("/{id}", h.Delete).Methods(http.MethodDelete)       // Delete a competitors
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
