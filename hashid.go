@@ -1,6 +1,7 @@
 package fishing
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/speps/go-hashids/v2"
@@ -22,7 +23,7 @@ func (id HashID) Hash() (string, error) {
 
 	str, err := hash.Encode([]int{int(id)})
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	return str, nil
 }
@@ -32,7 +33,11 @@ func NewHashID(h string) (HashID, error) {
 	if err != nil {
 		return 0, err
 	}
-	str := hash.Decode(string(h)) // TODO: deprecated
+	// str := hash.Decode(string(h)) // TODO: deprecated
+	str, err := hash.DecodeWithError(h)
+	if err != nil {
+		return 0, err
+	}
 	if len(str) == 0 {
 		return 0, errors.New("invalid hash")
 	}
@@ -44,16 +49,20 @@ func (id HashID) MarshalJSON() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return []byte(h), nil
+	return json.Marshal(h)
 }
 
 func (id *HashID) UnmarshalJSON(b []byte) error {
-	str := string(b)
-	h, err := NewHashID(str)
+	var j string
+	err := json.Unmarshal(b, &j)
 	if err != nil {
 		return err
 	}
-	id = &h
+	h, err := NewHashID(j)
+	if err != nil {
+		return err
+	}
+	*id = h
 	return nil
 }
 
