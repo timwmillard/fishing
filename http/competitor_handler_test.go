@@ -72,8 +72,6 @@ func TestCompetitorsHandler_List_empty(t *testing.T) {
 func TestCompetitorsHandler_List_error(t *testing.T) {
 	is := is.New(t)
 
-	// want := fake.Competitors(2)
-
 	mockRepo := &mock.CompetitorRepo{}
 	mockRepo.ListFunc = func(ctx context.Context) ([]fishing.Competitor, error) {
 		return nil, fmt.Errorf("test")
@@ -87,6 +85,6 @@ func TestCompetitorsHandler_List_error(t *testing.T) {
 	// SUT
 	compHandler.List(w, req)
 
-	is.Equal(http.StatusNotFound, w.Code)
+	is.Equal(http.StatusInternalServerError, w.Code)
 	is.True(len(mockRepo.ListCalls()) > 0)
 }
