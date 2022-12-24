@@ -5,7 +5,7 @@
 
 -- DROP TABLE IF EXISTS  team;
 
-DROP TABLE IF EXISTS  fishing.competitors;
+DROP TABLE IF EXISTS  fishing.competitor;
 
 -- DROP TABLE IF EXISTS  catches;
 

@@ -7,39 +7,44 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/timwmillard/fishing/http"
 	"github.com/timwmillard/fishing/postgres"
-)
-
-var port = 9600
-
-var (
-	dbName     = "fishingcomp"
-	dbUser     = "root"
-	dbPassword = "fish"
-	dbPort     = 5555
-	dbHost     = "localhost"
 )
 
 func main() {
 	ctx := context.Background()
 	_, cancel := context.WithCancel(ctx)
 
+	godotenv.Load()
+
+	portEnv := os.Getenv("PORT")
+	port, err := strconv.Atoi(portEnv)
+	if err != nil {
+		log.Fatalf("Port must be an integer: %v", err)
+	}
+	dbHost := os.Getenv("PGHOST")
+	dbPort := os.Getenv("PGPORT")
+	dbName := os.Getenv("PGDATABASE")
+	dbUser := os.Getenv("PGUSER")
+	dbPassword := os.Getenv("PGPASSWORD")
+
 	// Setup database
-	dbURI := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
+	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbUser,
 		dbPassword,
 		dbHost,
 		dbPort,
 		dbName,
 	)
-	println(dbURI)
-	db, err := sql.Open("postgres", dbURI)
+	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Unable to open PostgreSQL database: %v", err)
 	}
+	log.Println("Postgres database connection successful")
 
 	competitorRepo := &postgres.CompetitorRepo{DB: db}
 	competitorHandler := http.NewCompetitorHandler(competitorRepo)

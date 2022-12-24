@@ -1,4 +1,21 @@
 
+ENV ?= local
+
+
+include .env
+
+
+
+-include .env.$(ENV)
+
+env:
+	@echo ENV=$(ENV)
+	@echo PGHOST=$(PGHOST)
+	@echo PGPORT=$(PGPORT)
+	@echo PGDATABASE=$(PGDATABASE)
+	@echo PGUSER=$(PGUSER)
+	@echo PGPASSWORD=$(PGPASSWORD)
+
 all: build
 
 help: ## Show this help.
@@ -23,30 +40,30 @@ clean: ## Remove build binaries
 	rm cmd/fishingd/fishingd
 
 docker-db: ## Start the database using docker
-	docker run --name fishing-db -p 5555:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=fish -e POSTGRES_DB=fishingcomp -d postgres:12-alpine
+	docker run --name $(PGDATABASE) -p $(PGPORT):5432 -e POSTGRES_USER=$(PGUSER) -e POSTGRES_PASSWORD=$(PGPASSWORD) -e POSTGRES_DB=$(PGDATABASE) -d postgres:13-alpine
 
 docker-psql: ## Connect to psql running in the docker container
-	docker exec -it fishing-db psql -U root -d fishingcomp
+	docker exec -it $(PGDATABASE) psql -U $(PGUSER) -d $(PGDATABASE)
 
 psql-docker-db: ## Run the local psql connecting the docker database
-	psql -h localhost -U root -p 5555 -d fishingcomp
+	psql -h localhost -U $(PGUSER) -p $(PGPORT) -d $(PGDATABASE)
 
 docker-logs: ## Show the docker database logs
-	docker logs fishing-db -f
+	docker logs $(PGDATABASE) -f
 
 docker-clean:  ## Remove the docker database and container
-	-docker stop fishing-db
-	-docker rm fishing-db
+	-docker stop $(PGDATABASE)
+	-docker rm $(PGDATABASE)
 
-docker-migrate: docker-migrate-up ## Migrate up docker database
-
-docker-migrate-up: ## Migrate up docker database
-	migrate -path postgres/migrations -database "postgres://root:fish@localhost:5555/fishingcomp?sslmode=disable" up
-
-docker-migrate-down: ## Migrate down docker database
-	migrate -path postgres/migrations -database "postgres://root:fish@localhost:5555/fishingcomp?sslmode=disable" down
-
-docker-db-reset: docker-clean docker-db sleep docker-migrate ## Remove the docker database and restart it
+docker-db-reset: docker-clean docker-db sleep migrate ## Remove the docker database and restart it
 
 sleep:
 	sleep 5
+
+migrate: migrate-up ## Migrate up docker database
+
+migrate-up: ## Migrate up docker database
+	migrate -path postgres/migrations -database "postgres://$(PGUSER):$(PGPASSWORD)@$(PGHOST):$(PGPORT)/$(PGDATABASE)?sslmode=disable" up
+
+migrate-down: ## Migrate down docker database
+	migrate -path postgres/migrations -database "postgres://$(PGUSER):$(PGPASSWORD)@$(PGHOST):$(PGPORT)/$(PGDATABASE)?sslmode=disable" down
