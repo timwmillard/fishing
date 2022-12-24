@@ -1,15 +1,12 @@
 
 ENV ?= local
 
-
-include .env
-
-
-
+-include .env
 -include .env.$(ENV)
 
 env:
 	@echo ENV=$(ENV)
+	@echo PORT=$(PORT)
 	@echo PGHOST=$(PGHOST)
 	@echo PGPORT=$(PGPORT)
 	@echo PGDATABASE=$(PGDATABASE)
@@ -45,9 +42,6 @@ docker-db: ## Start the database using docker
 docker-psql: ## Connect to psql running in the docker container
 	docker exec -it $(PGDATABASE) psql -U $(PGUSER) -d $(PGDATABASE)
 
-psql-docker-db: ## Run the local psql connecting the docker database
-	psql -h localhost -U $(PGUSER) -p $(PGPORT) -d $(PGDATABASE)
-
 docker-logs: ## Show the docker database logs
 	docker logs $(PGDATABASE) -f
 
@@ -59,6 +53,9 @@ docker-db-reset: docker-clean docker-db sleep migrate ## Remove the docker datab
 
 sleep:
 	sleep 5
+
+psql: ## Run the local psql connecting the docker database
+	psql -h localhost -U $(PGUSER) -p $(PGPORT) -d $(PGDATABASE)
 
 migrate: migrate-up ## Migrate up docker database
 

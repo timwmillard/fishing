@@ -13,7 +13,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gotestyourself/gotestyourself v1.3.0 // indirect
 	github.com/icrowley/fake v0.0.0-20221112152111-d7b7e2276db2
-	github.com/joho/godotenv v1.4.0 // indirect
+	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.0
 	github.com/matryer/is v1.4.0
 	github.com/opencontainers/runc v1.0.0-rc93 // indirect
