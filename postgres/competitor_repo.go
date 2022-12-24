@@ -81,7 +81,13 @@ func (r *CompetitorRepo) Get(ctx context.Context, id fishing.HashID) (fishing.Co
 		&i.Postcode,
 		&i.Mobile,
 	)
-	return i, err
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return i, fishing.ErrCompetitorNotFound
+		}
+		return i, err
+	}
+	return i, nil
 }
 
 const createCompetitor = `-- name: CreateCompetitor :one
