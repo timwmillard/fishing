@@ -66,3 +66,7 @@ migrate-up: ## Migrate up docker database
 
 migrate-down: ## Migrate down docker database
 	migrate -path postgres/migrations -database "postgres://$(PGUSER):$(PGPASSWORD)@$(PGHOST):$(PGPORT)/$(PGDATABASE)?sslmode=disable" down
+
+
+seed:
+	psql $(DATABASE_URL) < postgres/seed/murrabitcodchallenge.sql
