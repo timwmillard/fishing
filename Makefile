@@ -14,6 +14,7 @@ env:
 	@echo PGDATABASE=$(PGDATABASE)
 	@echo PGUSER=$(PGUSER)
 	@echo PGPASSWORD=$(PGPASSWORD)
+	@echo DATABASE_URL=$(DATABASE_URL)
 
 all: build
 
