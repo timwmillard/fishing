@@ -40,6 +40,7 @@ func main() {
 		dbPort,
 		dbName,
 	)
+	log.Printf("Connecting to Postgres at %s", dbURL)
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("Unable to open PostgreSQL database: %v", err)
