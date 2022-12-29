@@ -1,5 +1,5 @@
 
-ENV ?= local
+ENV?=local
 
 -include .env
 -include .env.$(ENV)
