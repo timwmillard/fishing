@@ -33,12 +33,12 @@ func main() {
 	dbPassword := os.Getenv("PGPASSWORD")
 
 	// Setup database
-	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		dbUser,
-		dbPassword,
+	dbURL := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
 		dbHost,
 		dbPort,
 		dbName,
+		dbUser,
+		dbPassword,
 	)
 	log.Printf("Connecting to Postgres at %s", dbURL)
 	db, err := sql.Open("postgres", dbURL)
