@@ -58,7 +58,7 @@ sleep:
 	sleep 5
 
 psql: ## Run the local psql connecting the docker database
-	psql $(DATABASE_URL)
+	psql "$(DATABASE_URL)"
 
 migrate: migrate-up ## Migrate up docker database
 
