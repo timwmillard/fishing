@@ -1,11 +1,11 @@
 
-DROP TABLE IF EXISTS  fishing.competitor CASCADE;
-DROP TABLE IF EXISTS  fishing.event CASCADE;
-DROP TABLE IF EXISTS  fishing.club CASCADE;
-DROP TABLE IF EXISTS  fishing.team CASCADE;
-DROP TABLE IF EXISTS  fishing.species CASCADE;
-DROP TABLE IF EXISTS  fishing.catch CASCADE;
+drop table if exists  fishing.competitor cascade;
+drop table if exists  fishing.event cascade;
+drop table if exists  fishing.club cascade;
+drop table if exists  fishing.team cascade;
+drop table if exists  fishing.species cascade;
+drop table if exists  fishing.catch cascade;
 
--- DROP TABLE IF EXISTS  users;
+-- drop table if exists  users;
 
-DROP SCHEMA IF EXISTS fishing;
+drop schema if exists fishing;

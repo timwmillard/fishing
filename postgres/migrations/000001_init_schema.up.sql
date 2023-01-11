@@ -1,89 +1,89 @@
 
-CREATE SCHEMA IF NOT EXISTS fishing;
+create schema if not exists fishing;
 
-CREATE TABLE IF NOT EXISTS fishing.club (
-  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name text NOT NULL,
-  slug text NOT NULL,
-  legal_name text NOT NULL DEFAULT '',
+create table if not exists fishing.club (
+  id bigint generated always as identity primary key,
+  name text not null,
+  slug text not null,
+  legal_name text not null default '',
   logo_url text,
   custom_domain text,
-  billing_address1 text NOT NULL DEFAULT '',
-  billing_address2 text NOT NULL DEFAULT '',
-  billing_suburb text NOT NULL DEFAULT '',
-  billing_state text NOT NULL DEFAULT '',
-  billing_postcode text NOT NULL DEFAULT '',
-  settings json NOT NULL DEFAULT '{}',
-  current_event bigint DEFAULT NULL
+  billing_address1 text not null default '',
+  billing_address2 text not null default '',
+  billing_suburb text not null default '',
+  billing_state text not null default '',
+  billing_postcode text not null default '',
+  settings json not null default '{}',
+  current_event bigint default null
 );
 
-CREATE TABLE IF NOT EXISTS fishing.event (
-  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name text NOT NULL,
-  slug text NOT NULL,
+create table if not exists fishing.event (
+  id bigint generated always as identity primary key,
+  name text not null,
+  slug text not null,
   start_timestamp timestamptz,
   end_timestamp timestamptz,
-  location text NOT NULL DEFAULT '',
-  settings json NOT NULL DEFAULT '{}',
-  club_id bigint NOT NULL REFERENCES fishing.club(id)
+  location text not null default '',
+  settings json not null default '{}',
+  club_id bigint not null references fishing.club(id)
 );
 
-ALTER TABLE fishing.club ADD FOREIGN KEY (current_event) REFERENCES fishing.event(id);
+alter table fishing.club add foreign key (current_event) references fishing.event(id);
 
-CREATE TABLE IF NOT EXISTS fishing.team (
-  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  team_no int NOT NULL,
-  name text NOT NULL DEFAULT '',
-  boat_rego text NOT NULL DEFAULT '',
-  event_id bigint NOT NULL REFERENCES fishing.event(id)
+create table if not exists fishing.team (
+  id bigint generated always as identity primary key,
+  team_no int not null,
+  name text not null default '',
+  boat_rego text not null default '',
+  event_id bigint not null references fishing.event(id)
 );
 
-CREATE TABLE IF NOT EXISTS fishing.competitor  (
-  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  competitor_no text NOT NULL DEFAULT '',
-  first_name text NOT NULL DEFAULT '',
-  last_name text NOT NULL DEFAULT '',
-  email text NOT NULL DEFAULT '',
-  address1 text NOT NULL DEFAULT '',
-  address2 text NOT NULL DEFAULT '',
-  suburb text NOT NULL DEFAULT '',
-  state text NOT NULL DEFAULT '',
-  postcode text NOT NULL DEFAULT '',
-  mobile text NOT NULL DEFAULT '',
-  event_id bigint NOT NULL REFERENCES fishing.event(id),
-  team_id bigint REFERENCES fishing.team(id),
+create table if not exists fishing.competitor  (
+  id bigint generated always as identity primary key,
+  competitor_no text not null default '',
+  first_name text not null default '',
+  last_name text not null default '',
+  email text not null default '',
+  address1 text not null default '',
+  address2 text not null default '',
+  suburb text not null default '',
+  state text not null default '',
+  postcode text not null default '',
+  mobile text not null default '',
+  event_id bigint not null references fishing.event(id),
+  team_id bigint references fishing.team(id),
   user_id bigint,
-  UNIQUE(event_id, competitor_no)
+  unique(event_id, competitor_no)
 );
 
-CREATE TABLE fishing.species (
-  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  common_name text UNIQUE NOT NULL,
-  scientific_name text NOT NULL DEFAULT '',
-  slug text UNIQUE NOT NULL,
+create table fishing.species (
+  id bigint generated always as identity primary key,
+  common_name text unique not null,
+  scientific_name text not null default '',
+  slug text unique not null,
   photo_url text
 );
 
-CREATE TABLE fishing.catch (
-  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  competitor_id bigint NOT NULL REFERENCES fishing.competitor(id),
-  species_id bigint NOT NULL REFERENCES fishing.species(id),
-  size int NOT NULL,
-  caught_at timestamptz NOT NULL,
-  bait text NOT NULL DEFAULT '',
-  location text NOT NULL DEFAULT '',
+create table fishing.catch (
+  id bigint generated always as identity primary key,
+  competitor_id bigint not null references fishing.competitor(id),
+  species_id bigint not null references fishing.species(id),
+  size int not null,
+  caught_at timestamptz not null,
+  bait text not null default '',
+  location text not null default '',
   latitude numeric,
   longitude numeric,
   photo_url text,
-  event_id bigint NOT NULL REFERENCES fishing.event(id)
+  event_id bigint not null references fishing.event(id)
 );
 
 
 
--- CREATE TABLE user (
---   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
---   username text UNIQUE NOT NULL,
---   password text NOT NULL,
+-- create table user (
+--   id bigint generated always as identity primary key,
+--   username text unique not null,
+--   password text not null,
 --   firstname text,
 --   lastname text,
 --   email text,
@@ -100,7 +100,7 @@ CREATE TABLE fishing.catch (
 
 
 
--- CREATE TABLE club_users (
+-- create table club_users (
 --   club_id int,
 --   user_id int,
 --   admin smallint,
