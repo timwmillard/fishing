@@ -40,7 +40,7 @@ clean: ## Remove build binaries
 	rm cmd/fishingd/fishingd
 
 docker-db: ## Start the database using docker
-	docker run --name $(PGDATABASE) -p $(PGPORT):5432 -e POSTGRES_USER=$(PGUSER) -e POSTGRES_PASSWORD=$(PGPASSWORD) -e POSTGRES_DB=$(PGDATABASE) -d postgres:13-alpine
+	docker run --name $(PGDATABASE) -p $(PGPORT):5432 -e POSTGRES_USER=$(PGUSER) -e POSTGRES_PASSWORD=$(PGPASSWORD) -e POSTGRES_DB=$(PGDATABASE) -d postgres:15-alpine
 
 docker-psql: ## Connect to psql running in the docker container
 	docker exec -it $(PGDATABASE) psql -U $(PGUSER) -d $(PGDATABASE)

@@ -15,3 +15,6 @@ archive
 # Executables
 /fishingd
 /cmd/fishingd/fishingd
+
+# Data
+/postgres/data

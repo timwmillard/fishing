@@ -37,7 +37,7 @@ type TeamsRepo interface {
 	// Add single Competitor
 	AddCompetitor(teamID uuid.UUID, competitorID int) error
 
-	// Add mutiple Competitors
+	// Add multiple Competitors
 	AddCompetitors(teamID uuid.UUID, competitorIDs []int) error
 
 	// Remove single Competitor
